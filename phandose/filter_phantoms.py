@@ -1,27 +1,27 @@
 from pathlib import Path
-from typing import Union
 import pandas as pd
-import time
 import os
 
-# path_phantom_lib = Path(__file__).parent.parent / "PhantomLib"
-PATH_PHANTOM_LIB = Path(fr"C:\Users\maichi\work\My Projects\PhanDose\PhantomLib")
+
+def filter_phantoms(df_phantom_lib: pd.DataFrame,
+                    df_patient_characteristics: pd.DataFrame,
+                    df_contours: pd.DataFrame,
+                    **kwargs):
+
+    list_vertebrae = [
+        "vertebrae C1", "vertebrae C2", "vertebrae C3", "vertebrae C4", "vertebrae C5", "vertebrae C6", "vertebrae C7",
+        "vertebrae T1", "vertebrae T2", "vertebrae T3", "vertebrae T4", "vertebrae T5", "vertebrae T6", "vertebrae T7",
+        "vertebrae T8", "vertebrae T9", "vertebrae T10", "vertebrae T11", "vertebrae T12",
+        "vertebrae L1", "vertebrae L2", "vertebrae L3", "vertebrae L4", "vertebrae L5",
+        "vertebrae S1"
+    ]
+
+    df_contours = df_contours.loc[~df_contours["ROIName"].isin(["body", "skin"])].copy()
+    df_contours[["Origine", "Section"]] = ["Patient", "0"]
+    patient_bottom_z = df_contours["z"].min()
+    patient_top_z = df_contours["z"].max()
+    list_patient_contours = df_contours["ROIName"].unique().tolist()
 
 
-def create_df_phantom_lib(path_phantom_lib: Union[Path, str]) -> pd.DataFrame:
-    """
-    function to create the phantom library dataframe :
-    :param path_phantom_lib: Union[Path, str], path to the phantom library
-    :return: pd.DataFrame, phantom library dataframe
-    """
-    L_phantom_lib = [filename for filename in os.listdir(path_phantom_lib) if filename.endswith(".txt")]
-    df_phantom_lib = pd.DataFrame({"Phantom": L_phantom_lib})
-
-    df_phantom_lib["Position"] = df_phantom_lib["Phantom"].map(lambda x: x.split("_")[1])
-    df_phantom_lib["Sex"] = df_phantom_lib["Phantom"].map(lambda x: x.split("_")[2])
-
-    return df_phantom_lib
 
 
-def filter_phantoms(self):
-    pass

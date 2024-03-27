@@ -1,14 +1,13 @@
 from pathlib import Path
 import pydicom as dcm
 import pandas as pd
-import os
 
 
-def get_patient_characteristics(*L_path_imaging: Path | str) -> pd.DataFrame:
+def get_patient_characteristics(*list_path_imaging: Path | str) -> pd.DataFrame:
     """
     Extract patient characteristics from imaging data (CT or PETCT) stored in specified paths.
 
-    :param L_path_imaging: *(Union[Path, str]) Variable number of paths to imaging Data. (e.g. CT or PETCT)
+    :param list_path_imaging: *(Union[Path, str]) Variable number of paths to imaging Data. (e.g. CT or PETCT)
     :return: pd.DataFrame, A DataFrame containing the patient characteristics extracted from the specified paths
 
     """
@@ -28,7 +27,7 @@ def get_patient_characteristics(*L_path_imaging: Path | str) -> pd.DataFrame:
 
     df_patient_data = pd.DataFrame(columns=cols)
 
-    for path_imaging in L_path_imaging:
+    for path_imaging in list_path_imaging:
 
         path_imaging = Path(path_imaging)
         # Get patients characteristics from the first slice :
@@ -89,10 +88,3 @@ def get_patient_characteristics(*L_path_imaging: Path | str) -> pd.DataFrame:
                 df_patient_data = _df if df_patient_data.empty else pd.concat([df_patient_data, _df], ignore_index=True)
 
     return df_patient_data
-
-
-dir_patient = Path(fr"C:\Users\maichi\work\My Projects\PhanDose\AGORL_P33")
-
-dir_ct = dir_patient / "CT_TO_TOTALSEGMENTATOR"
-dir_petct = dir_patient / "PET_TO_TOTALSEGMENTATOR"
-df_patient_characteristics = get_patient_characteristics(dir_ct, dir_petct)
