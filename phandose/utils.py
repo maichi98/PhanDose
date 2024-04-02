@@ -4,13 +4,12 @@ import cv2
 
 
 def round_nearest(x, a):
-
     return round(round(x / a) * a, 2)
 
-def cart_to_pol(x, y, x_c, y_c):
 
+def cart_to_pol(x, y, x_c, y_c):
     complex_format = x - x_c + 1j * (y - y_c)
-    return np.abs(complex_format), np.angle(complex_format, deg = False)
+    return np.abs(complex_format), np.angle(complex_format, deg=False)
 
 
 def Get_Area(SelectedContours):
@@ -45,3 +44,5 @@ def Get_Area(SelectedContours):
                                                   'Area'])
                 AreaDf = pd.concat([AreaDf, df0], ignore_index=True)
     return AreaDf
+
+

@@ -1,3 +1,7 @@
 from .convert_segmentations_to_xyz import convert_nifti_segmentations_to_xyz
 from .patient_characteristics import get_patient_characteristics
-from .filter_phantoms import filter_phantoms
+from .filter_phantoms import (
+_get_full_vertebrae_dataframe,
+_get_phantom_lib_dataframe,
+_get_barycenter_dataframe,
+)

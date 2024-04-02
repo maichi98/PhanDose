@@ -1,6 +1,8 @@
 from phandose import convert_nifti_segmentations_to_xyz
 from phandose import get_patient_characteristics
-from phandose import filter_phantoms
+from phandose import _get_phantom_lib_dataframe, _get_full_vertebrae_dataframe
+from phandose import _get_barycenter_dataframe
+import pandas as pd
 from pathlib import Path
 import platform
 
@@ -8,11 +10,14 @@ import platform
 def main():
 
     if platform.system() == "Windows":
-        dir_patient = Path(fr"C:/Users/maichi/work/My Projects/PhanDose/sample_data") / "AGORL_P33"
-        dir_save = Path(fr"C:/Users/maichi/work/My Projects/PhanDose/test")
+        dir_project = Path(fr"C:/Users/maichi/work/My Projects/PhanDose")
     else:
-        dir_patient = Path("/home/maichi/work/My Projects/PhanDose/sample_data") / "AGORL_P33"
-        dir_save = Path("/home/maichi/work/My Projects/PhanDose/test")
+        dir_project = Path("/home/maichi/work/My Projects/PhanDose")
+
+    dir_patient = dir_project / "sample_data" / "AGORL_P33"
+    dir_save = dir_project / "test"
+    dir_phantom_lib = dir_project / "PhantomLib"
+
     assert dir_patient.exists(), "The patient directory does not exist."
     if not dir_save.exists():
         dir_save.mkdir()
@@ -30,7 +35,15 @@ def main():
     df_contours.to_csv(dir_save / "contours.csv", sep=";", index=False)
 
     print("Filter phantoms...")
-    # df_full_vertebrae = filter_phantoms(dir_patient / "phantom_lib", df_patient_characteristics, df_contours)
+    print("Create phantom library...")
+    df_phantom_lib = _get_phantom_lib_dataframe(dir_phantom_lib)
+    df_phantom_lib.to_csv(dir_save / "phantom_lib.csv", sep=";", index=False)
+
+    print("Create full vertebrae...")
+    df_contours = pd.read_csv(dir_save / "contours.csv", sep=";")
+
+    df_full_vertebrae = _get_full_vertebrae_dataframe(df_contours)
+    df_full_vertebrae.to_csv(dir_save / "full_vertebrae.csv", sep=";", index=False)
 
 
 if __name__ == '__main__':

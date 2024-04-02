@@ -53,8 +53,8 @@ def convert_nifti_segmentations_to_xyz(dir_segmentations: Path | str) -> pd.Data
                 df_contour = pd.DataFrame(contour, columns=["x", "y"])
 
                 # Adjust the x, y and z coordinates based on the header information :
-                df_contour["x"] = df_contour["x"] - header_segmentation["qoffset_x"]
-                df_contour["y"] = df_contour["y"] + header_segmentation["qoffset_y"]
+                df_contour["x"] -= header_segmentation["qoffset_x"]
+                df_contour["y"] += header_segmentation["qoffset_y"]
                 df_contour["z"] = (slice_number * header_segmentation["pixdim"][3]) + header_segmentation["qoffset_z"]
 
                 # Add additional information about the ROI :
