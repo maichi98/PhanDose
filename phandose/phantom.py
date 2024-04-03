@@ -88,8 +88,7 @@ def _get_barycenter_dataframe(df_contours: pd.DataFrame) -> pd.DataFrame:
 
 
 def _get_top_junction_dataframe(df_contours: pd.DataFrame,
-                                df_barycenter: pd.DataFrame):
-
+                                df_barycenter: pd.DataFrame) -> pd.DataFrame:
     """
     Create a DataFrame that indicates the top junction of the patient's contours.
 
@@ -106,88 +105,109 @@ def _get_top_junction_dataframe(df_contours: pd.DataFrame,
     top_vertebra_z = df_barycenter["Barz"].max()
 
     if "skull" in df_contours["ROIName"].unique():
-
         skull_z_max = df_contours.loc[df_contours["ROIName"] == "skull", "z"].max()
         skull_z_min = df_contours.loc[df_contours["ROIName"] == "skull", "z"].min()
 
         top_vertebra_z = df_barycenter.loc[df_barycenter["Barz"] < (skull_z_min - 3 * delta_z_mean), "Barz"].max()
         is_top_junction = (skull_z_max == df_contours["z"].max())
 
-    top_vertebra_x = df_barycenter.loc[df_barycenter["Barz"] == top_vertebra_z, "Barx"].values[0]
-    top_vertebra_y = df_barycenter.loc[df_barycenter["Barz"] == top_vertebra_z, "Bary"].values[0]
-
-    top_vertebra = df_barycenter.loc[df_barycenter["Barz"] == top_vertebra_z, 'Organ'].values[0]
-
     if is_top_junction:
-
         df_top_junction = df_contours.loc[df_contours["ROIName"] == 'body trunc'].copy()
-
         df_top_junction["Ecart"] = abs(df_top_junction["z"] - top_vertebra_z)
-
         ecart_min = df_top_junction["Ecart"].min()
-
         df_top_junction = df_top_junction.loc[df_top_junction["Ecart"] == ecart_min]
-
-        df_contours = df_contours.loc[df_contours["z"] <= df_top_junction["z"].values[0]]
-
         df_area_top_junction = Get_Area(df_top_junction)
-
         df_area_top_junction["Centrality"] = abs(df_area_top_junction["Centrex"])
-
         center_min = df_area_top_junction["Centrality"].min()
-
         contour_num = df_area_top_junction.loc[df_area_top_junction["Centrality"] == center_min, "ROIContourNumber"].values[0]
-
         df_top_junction = df_top_junction.loc[df_top_junction["ROIContourNumber"] == contour_num]
 
-        center = df_top_junction[["x", "y"]].to_numpy()
+        get_polar = lambda row: cart_to_pol((row['x'],
+                                             row['y'],
+                                             df_area_top_junction.iloc[0]['Centrex'],
+                                             df_area_top_junction.iloc[0]['Centrey']))
 
-        center_int = np.array([center]).astype(np.int32)
-
-        xul, yul, wrp, hrp = cv2.boundingRect(center_int)
-
-        top_rectangle = np.array([[xul, yul], [xul, yul + hrp], [xul + wrp, yul + hrp], [xul + wrp, yul]])
-
-        df_top_junction['Polar'] = df_top_junction.apply(lambda row: cart_to_pol((row['x'],
-                                                                                  row['y'],
-                                                                                  df_area_top_junction.iloc[0]['Centrex'],
-                                                                                    df_area_top_junction.iloc[0]['Centrey'])), axis=1)
+        df_top_junction['Polar'] = df_top_junction.apply(get_polar, axis=1)
 
         df_top_junction['rpat'] = df_top_junction.apply(lambda row: row['Polar'][0], axis=1)
         df_top_junction['tpat'] = df_top_junction.apply(lambda row: row['Polar'][1], axis=1)
 
-        df_top_junction = df_top_junction.drop_duplicates(subset=['tpat'], keep='last')
-        return df_top_junction, top_rectangle
+        return df_top_junction
+
+
+def _get_bottom_junction_dataframe(df_contours: pd.DataFrame,
+                                   df_barycenter: pd.DataFrame) -> pd.DataFrame:
+    """
+    Create a DataFrame that indicates the bottom junction of the patient's contours.
+
+    :param df_contours: pd.DataFrame,
+    :return:
+    """
+
+    is_bottom_junction = ({'femur left', 'femur right'}.issubset(df_contours["ROIName"].unique()) == False)
+
+    if is_bottom_junction:
+
+        bottom_vertebra_z = df_barycenter["Barz"].min()
+
+        df_bottom_junction = df_contours.loc[df_contours["ROIName"] == 'body trunc'].copy()
+        df_bottom_junction["Ecart"] = abs(df_bottom_junction["z"] - bottom_vertebra_z)
+
+        ecart_min = df_bottom_junction["Ecart"].min()
+        df_bottom_junction = df_bottom_junction.loc[df_bottom_junction["Ecart"] == ecart_min]
+
+        df_area_bottom_junction = Get_Area(df_bottom_junction)
+
+        df_area_bottom_junction["Centrality"] = abs(df_area_bottom_junction["Centrex"])
+        center_min = df_area_bottom_junction["Centrality"].min()
+        contour_num = df_area_bottom_junction.loc[df_area_bottom_junction["Centrality"] == center_min, "ROIContourNumber"].values[0]
+        df_bottom_junction = df_bottom_junction.loc[df_bottom_junction["ROIContourNumber"] == contour_num]
+
+        get_polar = lambda row: cart_to_pol((row['x'],
+                                             row['y'],
+                                             df_area_bottom_junction.iloc[0]['Centrex'],
+                                             df_area_bottom_junction.iloc[0]['Centrey']))
+
+        df_bottom_junction['Polar'] = df_bottom_junction.apply(get_polar, axis=1)
+
+        df_bottom_junction['rpat'] = df_bottom_junction.apply(lambda row: row['Polar'][0], axis=1)
+        df_bottom_junction['tpat'] = df_bottom_junction.apply(lambda row: row['Polar'][1], axis=1)
+
+        return df_bottom_junction
 
 
 def filter_phantoms(dir_phantom_lib: Path | str,
                     df_contours: pd.DataFrame,
-                    df_patient_characteristics: pd.DataFrame,
-                    **kwargs):
+                    df_patient_characteristics: pd.DataFrame):
 
     # Make sure path_phantom_lib is a Path object :
     dir_phantom_lib = Path(dir_phantom_lib)
 
-    # Select only the contours of the patient that are not the body or the skin :
-    df_contours = df_contours[~df_contours["ROIName"].isin(["body", "skin"])]
-    df_contours[["Origine", "Section"]] = ["Patient", 0]
-
-    # Create phantom_lib DataFrame :
+    # Load the phantom library :
     df_phantom_lib = _get_phantom_lib_dataframe(dir_phantom_lib)
 
-    # Create full_vertebrae DataFrame :
-    df_full_vertebrae = _get_full_vertebrae_dataframe(df_contours)
+    # Filter the phantoms based on the patient's sex and position :
+    patient_info = df_patient_characteristics.loc[df_patient_characteristics["Type"] == "CT_TO_TOTALSEGMENTATOR"].iloc[0]
+    sex, position = patient_info['PatientSex'], patient_info['PatientPosition']
 
-    list_full_vertebrae = df_full_vertebrae.loc[df_full_vertebrae["Full"], "ROIName"].tolist()
-    full_vertebrae_z_max = df_contours.loc[df_contours["ROIName"].isin(list_full_vertebrae), "z"].max()
-    full_vertebrae_z_min = df_contours.loc[df_contours["ROIName"].isin(list_full_vertebrae), "z"].min()
+    df_phantom_lib = df_phantom_lib.loc[(df_phantom_lib["Sex"] == sex) & (df_phantom_lib["Position"] == position)]
+    df_phantom_lib["SizeRatio"] = -1
 
-    full_vertebrae_size = full_vertebrae_z_max - full_vertebrae_z_min
+    # filter the phantom library based on size :
+    list_phantoms = df_phantom_lib["Phantom"].tolist().unique()
 
-    # Create barycenter DataFrame :
-    df_barycenter = _get_barycenter_dataframe(df_contours)
+    list_vertebrae = {
+        'vertebrae T1', 'vertebrae T2', 'vertebrae T3', 'vertebrae T4', 'vertebrae T5', 'vertebrae T6', 'vertebrae T7',
+        'vertebrae T8', 'vertebrae T9', 'vertebrae T10', 'vertebrae T11', 'vertebrae T12',
+        'vertebrae C1', 'vertebrae C2', 'vertebrae C3', 'vertebrae C4', 'vertebrae C5', 'vertebrae C6', 'vertebrae C7',
+        'vertebrae L1', 'vertebrae L2', 'vertebrae L3', 'vertebrae L4', 'vertebrae L5',
+        'vertebrae S1'
+    }
 
-    list_barycenter_z = sorted(df_barycenter["Barz"].unique().tolist())
-    barycenter_delta_z = [t - s for s, t in zip(list_barycenter_z, list_barycenter_z[1:])]
-    delta_z_mean = sum(barycenter_delta_z) / len(barycenter_delta_z)
+    for phantom in list_phantoms:
 
+        df_phantom = pd.read_csv(dir_phantom_lib / phantom, encoding="ISO-8859-1", sep="\t", header=0)
+
+        if list_vertebrae.issubset(df_phantom.loc[])
+
+    return df_phantom_lib
