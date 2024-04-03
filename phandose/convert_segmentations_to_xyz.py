@@ -71,3 +71,7 @@ def convert_nifti_segmentations_to_xyz(dir_segmentations: Path | str) -> pd.Data
     df_contours = df_contours[cols]
 
     return df_contours
+
+
+def convert_dicom_segmentations_to_xyz(dir_segmentations: Path | str) -> pd.DataFrame:
+    pass
