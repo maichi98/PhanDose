@@ -81,7 +81,7 @@ for root, dirs, files in os.walk(PatLib):
                             df0['point'] = df0[['X','Y']].apply(tuple, axis=1)
                             contains = np.vectorize(lambda p: int(Polygone.contains(geometry.Point(p))), signature='(n)->()')
                             ListPoints = df0['point'].tolist()
-                            Contient = contains(np.array(ListPoints))  
+                            Contient = contains(np.array(ListPoints))
                             df0[r] = Contient
                             # --------------------------------------------------------------------------------------------------------
                             df0 = df0[['X', 'Y', 'Z', 'DoseGy', r]]
@@ -94,4 +94,3 @@ end_time = datetime.now()
 print('---------------------------------------------------------------------------------------------------------------------------------------')
 print('Duration: {}'.format(end_time - start_time))
 print('---------------------------------------------------------------------------------------------------------------------------------------')
-
