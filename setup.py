@@ -8,10 +8,10 @@ with open('requirements.txt') as f:
 setup(
     name="phandose",
     version='1.0.0',
-    description="Package for handling data of the AIDREAM project",
+    description="",
     author="EL AICHI MOHAMMED",
     author_email="mohammed.el-aichi@gustaveroussy.fr",
-    url="https://github.com/maichi09/PhantomDose",
+    url="https://github.com/maichi09/PhanDose",
     packages=find_packages(),
     install_requires=requirements,
     classifiers=[
