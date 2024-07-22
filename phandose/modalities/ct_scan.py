@@ -30,7 +30,7 @@ class CTScanModality(Modality):
 
     def __init__(self,
                  series_instance_uid: str,
-                 list_path_slices: list[Path],
+                 dir_dicom_slices: Path,
                  series_description: str = None):
 
         """
@@ -41,30 +41,30 @@ class CTScanModality(Modality):
         series_instance_uid : (str)
             Series Instance UID.
 
-        list_path_slices : (list[Path])
-            List of paths to the slices of the CT Scan.
+        dir_dicom_slices : (Path)
+            Directory of the DICOM slices of the CT Scan.
 
         series_description : (str), optional
             Series Description.
         """
 
         super().__init__(series_instance_uid, series_description)
-        self._list_path_slices = list_path_slices
+        self._dir_dicom_slices = dir_dicom_slices
 
     @property
-    def list_path_slices(self):
+    def dir_dicom_slices(self):
         """
-        Getter method for the list of paths to the slices of the CT Scan.
+        Directory of the DICOM slices of the CT Scan.
         """
 
-        return self._list_path_slices
+        return self._dir_dicom_slices
 
     def dicom(self):
         """
         Returns the CT modality in DICOM format.
         """
 
-        return [dcm.dcmread(str(path_slice)) for path_slice in self._list_path_slices]
+        pass
 
     def nifti(self):
         """
