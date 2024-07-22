@@ -1,0 +1,57 @@
+[project]
+name = "phandose"
+version = "1.0"
+description = "PhanDose is a Framework for CT scan extension and Out Of Field Dose estimation"
+readme = "readme.md"
+license = { file = "LICENSE" }
+authors = [
+    { name = "EL AICHI Mohammed", email = "mohammed.EL-AICHI@gustaveroussy.fr" },
+    { name = "Institut Gustave Roussy, Unit U 1030, Radiotherapy department" }
+]
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Healthcare Industry",
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Computer vision",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+]
+keywords = [
+    'deep learning',
+    'image segmentation',
+    'CT scan extension',
+    'Out Of Field Dose estimation',
+    'DVH analysis',
+    'PhanDose',
+    'phan-dose'
+]
+dependencies = [
+    "numpy~=1.26.4",
+    "pandas~=2.2.1",
+    "scikit-image~=0.22.0",
+    "nibabel~=5.2.1",
+    "pydicom~=2.4.4",
+    "opencv-python~=4.9.0.80",
+    "scipy~=1.13.0",
+    "shapely~=2.0.4",
+    "pyarrow>=14.0.1",
+    "swifter~=1.4.0",
+]
+
+[project.urls]
+homepage = "https://github.com/maichi98/PhanDose"
+repository = "https://github.com/maichi98/PhanDose"
+
+[project.scripts]
+
+
+[build-system]
+requires = ["setuptools>=69.5.1"]
+build-backend = "setuptools.build_meta"
+
+[tool.codespell]
+skip = '.git,*pdf,*.svg'
