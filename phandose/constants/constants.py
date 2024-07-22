@@ -2,8 +2,11 @@ from pathlib import Path
 
 __all__ = [
     "DIR_PHANTOM_LIBRARY",
-    "PATH_LOGGING_CONFIG"
+    "DIR_WORKSPACE",
+    "DIR_LOGS"
 ]
 
-DIR_PHANTOM_LIBRARY = Path(__file__).parent.parent.parent / "PhantomLib"
-PATH_LOGGING_CONFIG = str(Path(__file__).parent.parent / "utils" / "logging.ini")
+DIR_PHANTOM_LIBRARY = "/home/maichi/.PhanDose/PhantomLib"
+DIR_WORKSPACE = "/home/maichi/.PhanDose/Workspace"
+
+DIR_LOGS = str(Path(__file__).parent.parent.parent / "logs")

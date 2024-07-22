@@ -1,5 +1,10 @@
+from phandose import utils
+
 from pathlib import Path
 import pandas as pd
+
+# Set up logger :
+logger = utils.get_logger("Phantom Library")
 
 
 class PhantomLibrary:
@@ -26,6 +31,8 @@ class PhantomLibrary:
     """
 
     def __init__(self, dir_phantom_library: Path):
+
+        logger.debug(fr"Building Phantom Library, directory: {str(dir_phantom_library)}")
         self._dir_phantom_lib = dir_phantom_library
 
     def get_phantom(self, phantom_name: str) -> pd.DataFrame:

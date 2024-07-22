@@ -1,8 +1,9 @@
 [project]
 name = "phandose"
 version = "1.0"
+requires-python = ">=3.10"
 description = "PhanDose is a Framework for CT scan extension and Out Of Field Dose estimation"
-readme = "readme.md"
+readme = "README.md"
 license = { file = "LICENSE" }
 authors = [
     { name = "EL AICHI Mohammed", email = "mohammed.EL-AICHI@gustaveroussy.fr" },
@@ -47,7 +48,7 @@ homepage = "https://github.com/maichi98/PhanDose"
 repository = "https://github.com/maichi98/PhanDose"
 
 [project.scripts]
-
+phandose = "execs.main:phandose"
 
 [build-system]
 requires = ["setuptools>=69.5.1"]

@@ -1,17 +1,15 @@
 from phandose.patient import Patient
 
-from pathlib import Path
-
 
 class Workspace:
-
     """
     This class is used to represent and manage a Workspace.
 
     Attributes
     ----------
-    _dir_workspace : (Path)
-        a Path object that represents the directory of the Workspace
+    _dict_patients : (dict[str, Patient])
+        A dictionary containing all patients in the workspace.
+        The key is the patient_id and the value is the Patient object.
 
     Methods
     -------
@@ -25,12 +23,10 @@ class Workspace:
         Retrieves a patient from the Workspace.
     """
 
-    def __init__(self, dir_workspace: Path, list_patients: list[Patient] = None):
+    def __init__(self, list_patients: list[Patient] = None):
 
         if list_patients is None:
             list_patients = []
-
-        self._dir_workspace = dir_workspace
         self._dict_patients = {patient.patient_id: patient for patient in list_patients}
 
     @property
