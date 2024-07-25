@@ -1,6 +1,7 @@
 from .modality import Modality
 
 from pathlib import Path
+import pydicom as dcm
 
 
 class CTScanModality(Modality):
@@ -29,7 +30,7 @@ class CTScanModality(Modality):
 
     def __init__(self,
                  series_instance_uid: str,
-                 list_dicom_paths: list[Path],
+                 dir_dicom_slices: Path,
                  series_description: str = None):
 
         """
@@ -48,22 +49,24 @@ class CTScanModality(Modality):
         """
 
         super().__init__(series_instance_uid, series_description)
-        self._list_dicom_paths = list_dicom_paths
+        self._dir_dicom_slices = dir_dicom_slices
 
     @property
-    def list_dicom_paths(self):
+    def dir_dicom_slices(self):
         """
-        Directory of the DICOM slices of the CT Scan.
+        Getter method for the Directory of the DICOM slices of the CT Scan.
         """
 
-        return self._list_dicom_paths
+        return self._dir_dicom_slices
 
     def dicom(self):
         """
         Returns the CT modality in DICOM format.
         """
-
-        pass
+        for path_slice in self._dir_dicom_slices.glob('*.dcm'):
+            dcm_slice = dcm.read_file(path_slice)
+            if dcm_slice.SeriesInstanceUID == self._series_instance_uid:
+                yield dcm_slice
 
     def nifti(self):
         """

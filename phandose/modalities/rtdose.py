@@ -8,14 +8,19 @@ class RtdoseModality(Modality):
 
     def __init__(self,
                  series_instance_uid: str,
-                 path_rtdose: Path,
+                 dir_dicom: Path,
                  series_description: str = None):
 
-        super().__init__(series_instance_uid, series_description)
-        self._path_rtdose = path_rtdose
+        super().__init__(series_instance_uid, dir_dicom, "RS", series_description)
 
-    def dicom(self):
-        return dcm.dcmread(str(self._path_rtdose))
+        self._path_rtdose = None
 
-    def nifti(self):
-        pass
+    @property
+    def path_rtdose(self):
+        """
+        Getter method for the path of the RTDOSE file.
+        """
+
+        if self._path_rtdose is not None:
+            return self._path_rtdose
+
