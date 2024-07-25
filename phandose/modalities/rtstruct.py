@@ -4,18 +4,18 @@ from pathlib import Path
 import pydicom as dcm
 
 
-class RtplanModality(Modality):
+class RtstructModality(Modality):
 
     def __init__(self,
                  series_instance_uid: str,
-                 path_rtplan: Path,
+                 path_rtstruct: Path,
                  series_description: str = None):
 
         super().__init__(series_instance_uid, series_description)
-        self._path_rtplan = path_rtplan
+        self._path_rtstruct = path_rtstruct
 
     def dicom(self):
-        return dcm.dcmread(str(self._path_rtplan))
+        return dcm.dcmread(str(self._path_rtstruct))
 
     def nifti(self):
         pass
