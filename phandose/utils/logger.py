@@ -106,20 +106,34 @@ def get_logger(name: str) -> logging.Logger:
                 'level': 'INFO',
                 'formatter': 'default',
             },
-            'file': {
+            'rootFileHandler': {
                 'class': 'logging.handlers.RotatingFileHandler',
-                'filename': f'{constants.DIR_LOGS}/run_phandose.log',
+                'filename': f'{constants.DIR_LOGS}/phandose_app.log',
                 'mode': 'a',  # Append mode
                 'maxBytes': 10485760,  # 10MB
                 'backupCount': 3,  # Keep 3 backup files
                 'level': 'DEBUG',
                 'formatter': 'file_formatter',
             },
+            'phantomLibraryFileHandler': {
+                'class': 'logging.handlers.RotatingFileHandler',
+                'filename': f'{constants.DIR_LOGS}/phantom_library.log',
+                'mode': 'a',  # Append mode
+                'maxBytes': 10485760,  # 10MB
+                'backupCount': 3,  # Keep 3 backup files
+                'level': 'DEBUG',
+                'formatter': 'file_formatter',
+            },
+
         },
         'loggers': {
             'root': {
                 'level': 'DEBUG',
-                'handlers': ['console', 'file'],
+                'handlers': ['console', 'rootFileHandler'],
+            },
+            'Phantom Library': {
+                'level': 'DEBUG',
+                'handlers': ['console', 'phantomLibraryFileHandler'],
             },
         }
     })
