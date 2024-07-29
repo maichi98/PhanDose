@@ -1,6 +1,4 @@
 from abc import ABC, abstractmethod
-from pathlib import Path
-import pydicom as dcm
 
 
 class Modality(ABC):
@@ -39,7 +37,6 @@ class Modality(ABC):
         """
         Abstract method that returns the modality in DICOM format.
         """
-
         pass
 
     @abstractmethod
@@ -47,5 +44,4 @@ class Modality(ABC):
         """
         Abstract method that returns the modality in NIfTI format.
         """
-
         pass

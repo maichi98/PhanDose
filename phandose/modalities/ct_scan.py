@@ -1,6 +1,5 @@
 from .modality import Modality
 
-from collections.abc import Iterator
 from pathlib import Path
 import pydicom as dcm
 
