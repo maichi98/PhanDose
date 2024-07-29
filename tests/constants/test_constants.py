@@ -13,18 +13,21 @@ class TestConstants(unittest.TestCase):
         """
         Test if the Phantom library directory exists.
         """
+
         self.assertTrue(Path(constants.DIR_PHANTOM_LIBRARY).exists())
 
     def test_dir_workspace_exists(self):
         """
         Test if the workspace directory exists.
         """
+
         self.assertTrue(Path(constants.DIR_WORKSPACE).exists())
 
     def test_dir_logs_exists(self):
         """
         Test if the logs directory exists.
         """
+
         self.assertTrue(Path(constants.DIR_LOGS).exists())
 
 

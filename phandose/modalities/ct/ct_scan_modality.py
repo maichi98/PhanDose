@@ -1,5 +1,6 @@
 from phandose.modalities.modality import Modality
 
+from typing import Generator
 from pathlib import Path
 import pydicom as dcm
 
@@ -76,7 +77,7 @@ class CTScanModality(Modality):
 
         self._series_description = next(self.dicom()).SeriesDescription
 
-    def dicom(self) -> iter(dcm.dataset.FileDataset):
+    def dicom(self) -> Generator[dcm.dataset.FileDataset, None, None]:
         """
         Getter method for the DICOM slices of the CT scan, yields DICOM slice objects that have the same
         SeriesInstanceUID as the CT scan in order.
