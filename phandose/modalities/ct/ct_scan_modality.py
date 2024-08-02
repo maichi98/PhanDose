@@ -84,7 +84,7 @@ class CTScanModality(Modality):
 
         Returns
         -------
-        iter(dcm.dataset.FileDataset)
+        Generator[dcm.dataset.FileDataset, None, None]
             DICOM slice objects of the CT scan
         """
 
