@@ -66,5 +66,4 @@ def create_modality(modality: str,
 
     return modality_class(series_instance_uid=series_instance_uid,
                           dir_dicom=dir_dicom,
-                          modality=modality,
                           **kwargs)

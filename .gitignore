@@ -164,3 +164,6 @@ PhantomLib/
 
 # test library
 test/
+
+# Notebooks
+notebooks/

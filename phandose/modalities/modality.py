@@ -49,7 +49,7 @@ class Modality(ABC):
 
         self._series_instance_uid = series_instance_uid
         self._series_description = series_description
-        self._modality = modality
+        self.modality = modality
 
     @property
     def series_instance_uid(self) -> str:
@@ -79,19 +79,6 @@ class Modality(ABC):
             self.set_series_description()
 
         return self._series_description
-
-    @property
-    def modality(self):
-        """
-        Getter for the modality type.
-
-        Returns
-        -------
-        str
-            The modality type (e.g. RS, RP, RD, CT).
-        """
-
-        return self._modality
 
     @abstractmethod
     def set_series_description(self):

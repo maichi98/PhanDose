@@ -77,6 +77,12 @@ class CTScanModality(Modality):
 
         self._series_description = next(self.dicom()).SeriesDescription
 
+    def __str__(self):
+        return f"CT Scan: {self.series_description} ({self.series_instance_uid})"
+
+    def __repr__(self):
+        pass
+
     def dicom(self) -> Generator[dcm.dataset.FileDataset, None, None]:
         """
         Getter method for the DICOM slices of the CT scan, yields DICOM slice objects that have the same
