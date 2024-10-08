@@ -100,3 +100,29 @@ class Modality(ABC):
         Abstract method that returns the modality in NIfTI format.
         """
         pass
+
+    def __str__(self):
+        """
+        Returns a user-friendly string representation of the Modality object.
+
+        Returns
+        -------
+        str
+            The string representation of the Modality object.
+        """
+        return (f"Modality: {self.modality} - "
+                f"Series Instance UID: {self.series_instance_uid} - "
+                f"Series Description: {self.series_description}")
+
+    def __repr__(self):
+        """
+        Returns a developer-friendly string representation of the Modality object.
+
+        Returns
+        -------
+        str
+            The string representation of the Modality object.
+        """
+        return (f"Modality(series_instance_uid={self.series_instance_uid!r}, "
+                f"series_description={self.series_description!r}, "
+                f"modality={self.modality!r})")

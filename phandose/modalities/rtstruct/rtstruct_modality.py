@@ -99,3 +99,17 @@ class RtstructModality(Modality):
 
     def nifti(self):
         pass
+
+    def __repr__(self):
+        """
+        Returns a developer-friendly representation of the RTStructModality object.
+
+        Returns
+        -------
+        str
+            Developer-friendly representation of the RTStructModality object.
+        """
+
+        return (f"RTStructModality(series_instance_uid={self.series_instance_uid}, " 
+                f"series_description={self.series_description},"
+                f" path_rtstruct={self.path_rtstruct})")

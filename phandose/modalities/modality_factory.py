@@ -1,6 +1,7 @@
 from .rtstruct import RtstructModality
 from .rtplan import RtplanModality
 from .rtdose import RtdoseModality
+from .pet import PETScanModality
 from .ct import CTScanModality
 from .modality import Modality
 
@@ -54,6 +55,7 @@ def create_modality(modality: str,
     # Dictionary mapping modality types to modality classes :
     dict_modality_classes = {
         "CT": CTScanModality,
+        "PET": PETScanModality,
         "RD": RtdoseModality,
         "RS": RtstructModality,
         "RP": RtplanModality

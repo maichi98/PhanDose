@@ -99,3 +99,17 @@ class RtplanModality(Modality):
 
     def nifti(self):
         pass
+
+    def __repr__(self):
+        """
+        Returns a developer-friendly representation of the RTPLANModality object.
+
+        Returns
+        -------
+        str
+            Developer-friendly representation of the RTPLANModality object.
+        """
+
+        return (f"RTPLANModality(series_instance_uid={self.series_instance_uid}, "
+                f"series_description={self.series_description},"
+                f" path_rtplan={self.path_rtplan})")

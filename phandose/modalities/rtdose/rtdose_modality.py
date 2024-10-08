@@ -99,3 +99,18 @@ class RtdoseModality(Modality):
 
     def nifti(self):
         pass
+
+    def __repr__(self):
+        """
+        Returns a developer-friendly string representation of the RtdoseModality object.
+
+        Returns
+        -------
+        str
+            The string representation of the RtdoseModality object.
+
+        """
+
+        return (f"RtdoseModality(series_instance_uid={self.series_instance_uid!r}, "
+                f"series_description={self.series_description!r}, "
+                f"path_rtdose={self.path_rtdose!r})")
