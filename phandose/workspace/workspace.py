@@ -53,7 +53,7 @@ class Workspace:
         """
         self._dict_patients[patient.patient_id] = patient
 
-    def remove_patient(self, id_patient: str):
+    def remove_patient(self, patient_id: str):
         """
         Removes a patient from the Workspace
 
@@ -63,7 +63,7 @@ class Workspace:
             The id of the patient to be removed from the workspace.
 
         """
-        self._dict_patients.pop(id_patient)
+        self._dict_patients.pop(patient_id)
 
     def get_patient(self, patient_id: str) -> Patient:
         """

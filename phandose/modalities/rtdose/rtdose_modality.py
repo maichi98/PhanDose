@@ -5,32 +5,6 @@ import pydicom as dcm
 
 
 class RtdoseModality(Modality):
-    """
-    Class for RTDOSE modality
-
-    Attributes
-    ----------
-    series_instance_uid : (str)
-        Series Instance UID of the RTDOSE modality
-
-    path_rtdose : (Path)
-        Path to the RTDOSE DICOM file
-
-    series_description : (str)
-        Series Description of the RTDOSE modality
-
-    Methods
-    -------
-    set_series_description()
-        Setter method for the series description of the RTDOSE modality, the series description is extracted
-        from the DICOM object metadata
-
-    dicom()
-        method to return the RTDOSE modality in DICOM format
-
-    nifti()
-        method to return the RTDOSE modality in NIfTI format
-    """
 
     def __init__(self,
                  series_instance_uid: str,
@@ -114,3 +88,32 @@ class RtdoseModality(Modality):
         return (f"RtdoseModality(series_instance_uid={self.series_instance_uid!r}, "
                 f"series_description={self.series_description!r}, "
                 f"path_rtdose={self.path_rtdose!r})")
+
+    def is_primary_dose(self) -> bool:
+        """
+        Method to determine if the RTDOSE modality is a primary RTDOSE modality
+
+        Returns
+        -------
+        bool
+            True if the RTDOSE modality is a primary RTDOSE modality, False otherwise
+        """
+
+        return self.dicom().get("DoseSummationType") == "PLAN"
+
+    def get_referenced_rtplan_uid(self) -> str:
+        """
+        Method to get the corresponding RTPLAN Series Instance UID of the RTDOSE modality
+
+        Returns
+        -------
+        str
+            The UID of the corresponding RTPLAN modality
+        """
+
+        referenced_rtplan_sequence = self.dicom().get("ReferencedRTPlanSequence", None)
+
+        if not referenced_rtplan_sequence:
+            raise ValueError(f"RTDOSE {self.series_instance_uid} doesn't reference any RTPLAN !")
+
+        return referenced_rtplan_sequence[0].get("ReferencedSOPInstanceUID")
