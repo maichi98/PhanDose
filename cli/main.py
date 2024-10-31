@@ -2,7 +2,6 @@ from cli.menus_cli import display_welcome_message, main_menu, workspace_menu
 from cli.phantom_library_cli import phantom_library_cli
 from cli.workspace_cli import workspace_cli
 
-from phandose.phantom_library import PhantomLibrary
 from phandose import constants, utils
 
 import time
@@ -16,9 +15,6 @@ def main():
     logger.debug("Starting PhanDose Application")
     display_welcome_message()
 
-    # Load the Phantom Library :
-    phantom_library = PhantomLibrary(constants.DIR_PHANTOM_LIBRARY)
-
     while True:
         # Display the menu :
         main_menu()
@@ -30,6 +26,9 @@ def main():
         match user_input:
 
             case '1':
+
+
+
                 while True:
                     workspace_menu()
                     workspace_input = input("Enter your choice : ")
