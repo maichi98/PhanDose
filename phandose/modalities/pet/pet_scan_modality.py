@@ -8,41 +8,35 @@ import pydicom as dcm
 class PETScanModality(Modality):
 
     def __init__(self,
-                 uid: str,
-                 dir_dicom: Path):
+                 modality_id: str,
+                 dir_dicom: Path,
+                 series_description: str = None):
 
-        super().__init__(uid, "PET")
+        super().__init__(modality_id=modality_id, modality_type="CT", series_description=series_description)
+
         self._dir_dicom = dir_dicom
 
     @property
     def dir_dicom(self) -> Path:
-
         return self._dir_dicom
 
-    @property
-    def series_instance_uid(self):
-
-        return next(self.dicom()).SeriesInstanceUID
-
-    @property
-    def series_description(self):
-
-        return next(self.dicom()).SeriesDescription
+    def set_series_description(self):
+        self._series_description = next(self.dicom()).SeriesDescription
 
     def dicom(self) -> Generator[dcm.dataset.FileDataset, None, None]:
         """
-        Getter method for the DICOM slices of the PET scan, yields DICOM slice objects that have the same
-        SeriesInstanceUID as the PET scan in order.
+        Getter method for the DICOM slices of the CT scan, yields DICOM slice objects that have the same
+        SeriesInstanceUID as the CT scan in order.
 
         Returns
         -------
         Generator[dcm.dataset.FileDataset, None, None]
-            DICOM slice objects of the PET scan
+            DICOM slice objects of the CT scan
         """
 
         for path_dicom in self._dir_dicom.glob("*.dcm"):
             dicom_slice = dcm.dcmread(str(path_dicom))
-            if dicom_slice.SeriesInstanceUID == self.series_instance_uid:
+            if dicom_slice.SeriesInstanceUID == self.modality_id:
                 yield dicom_slice
 
     def nifti(self):

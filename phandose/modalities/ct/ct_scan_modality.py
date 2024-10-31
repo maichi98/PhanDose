@@ -8,27 +8,27 @@ import pydicom as dcm
 class CTScanModality(Modality):
 
     def __init__(self,
-                 uid: str,
-                 dir_dicom: Path):
+                 modality_id: str,
+                 dir_dicom: Path,
+                 series_description: str = None):
 
-        super().__init__(uid, "CT")
+        super().__init__(modality_id=modality_id, modality_type="CT", series_description=series_description)
+
         self._dir_dicom = dir_dicom
 
     @property
     def dir_dicom(self) -> Path:
-
         return self._dir_dicom
 
-    @property
-    def series_instance_uid(self):
+    def set_series_description(self):
+        self._series_description = next(self.dicom()).SeriesDescription
 
-        return next(self.dicom()).SeriesInstanceUID
-
-
-    @property
-    def series_description(self):
-
-        return next(self.dicom()).SeriesDescription
+    def filter_dicom_slice_paths(self) -> Generator[Path, None, None]:
+        """Yields paths to DICOM slices that match the SeriesInstanceUID of this modality."""
+        for path_dicom in self._dir_dicom.glob("*.dcm"):
+            dicom_slice = dcm.dcmread(str(path_dicom))
+            if dicom_slice.SeriesInstanceUID == self.modality_id:
+                yield path_dicom
 
     def dicom(self) -> Generator[dcm.dataset.FileDataset, None, None]:
         """
@@ -43,9 +43,8 @@ class CTScanModality(Modality):
 
         for path_dicom in self._dir_dicom.glob("*.dcm"):
             dicom_slice = dcm.dcmread(str(path_dicom))
-            if dicom_slice.SeriesInstanceUID == self.series_instance_uid:
+            if dicom_slice.SeriesInstanceUID == self.modality_id:
                 yield dicom_slice
 
     def nifti(self):
         pass
-

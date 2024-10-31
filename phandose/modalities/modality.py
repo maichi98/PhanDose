@@ -8,37 +8,47 @@ class Modality(ABC):
     """
 
     def __init__(self,
-                 uid: str,
-                 modality: str = None):
+                 modality_id: str,
+                 modality_type: str,
+                 series_description: str = None):
         """
         Initializes the Modality with the identifier and modality type.
 
         Attributes
         ----------
-        uid : (str)
-            The UID of the modality.
+        modality_id : (str)
+            Identifier of the modality
 
-        modality : (str)
-            The modality type (e.g. RS, RP, RD, CT).
+        modality_type : (str)
+            Type of the modality (RTSTRUCT, RTPLAN, RTDOSE, CT)
+
+        series_description : (str), optional
+            Description of the series, (Default is None)
+
         """
 
-        self._uid = uid
-        self.modality = modality
+        self._modality_id = modality_id
+        self._modality_type = modality_type
+        self._series_description = series_description
 
     @property
-    def uid(self) -> str:
-
-        return self._uid
+    def modality_id(self) -> str:
+        return self._modality_id
 
     @property
-    def series_instance_uid(self) -> str:
-
-        return self.dicom().SeriesInstanceUID
+    def modality_type(self) -> str:
+        return self._modality_type
 
     @property
     def series_description(self) -> str:
+        if self._series_description is None:
+            self.set_series_description()
 
-        return self.dicom().SeriesDescription
+        return self._series_description
+
+    @abstractmethod
+    def set_series_description(self):
+        pass
 
     @abstractmethod
     def dicom(self):
@@ -55,8 +65,6 @@ class Modality(ABC):
         pass
 
     def __str__(self):
-
-        return f"Modality: {self.modality} - UID: {self.uid}"
+        return f"Modality: {self.modality_type} - UID: {self.modality_id}"
 
     __repr__ = __str__
-

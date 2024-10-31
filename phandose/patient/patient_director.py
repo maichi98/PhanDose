@@ -51,12 +51,21 @@ class PatientDirector:
         for path_dicom in dir_dicom.rglob("*.dcm"):
             try:
                 dicom_slice = dcm.read_file(str(path_dicom))
-                modality = utils.get_modality_from_dicom_slice(dicom_slice)
-                series_instance_uid = dicom_slice.SeriesInstanceUID
+                modality_type = utils.get_modality_from_dicom_slice(dicom_slice)
+
+                if modality_type in ['CT', 'PET']:
+                    modality_id = dicom_slice.SeriesInstanceUID
+
+                elif modality_type in ['RD', 'RP', 'RS']:
+                    modality_id = dicom_slice.SeriesInstanceUID
+
+                else:
+                    raise ValueError(f"Unknown modality type {modality_type} !")
+
                 series_description = dicom_slice.SeriesDescription
 
-                self._builder.add_modality(modality=modality,
-                                           series_instance_uid=series_instance_uid,
+                self._builder.add_modality(modality_id=modality_id,
+                                           modality_type=modality_type,
                                            dir_dicom=dir_dicom,
                                            series_description=series_description)
             except Exception as e:
@@ -101,21 +110,19 @@ class PatientDirector:
 
         # Add the CT modality :
         ct_uid = utils.get_series_instance_uid_from_directory(dir_ct)
-        self._builder.add_modality(modality='CT', series_instance_uid=ct_uid, dir_dicom=dir_ct)
+        self._builder.add_modality(modality_id=ct_uid, modality_type='CT', dir_dicom=dir_ct)
 
         # Add the Rtdose modality :
         rtdose_uid = dcm.dcmread(str(path_rtdose)).SeriesInstanceUID
-        self._builder.add_modality(modality='RD', series_instance_uid=rtdose_uid,
-                                   dir_dicom=None, path_rtdose=path_rtdose)
+        self._builder.add_modality(modality_id=rtdose_uid, modality_type='RD', dir_dicom=None, path_rtdose=path_rtdose)
 
         # Add the Rtplan modality :
         rtplan_uid = dcm.dcmread(str(path_rtplan)).SeriesInstanceUID
-        self._builder.add_modality(modality='RP', series_instance_uid=rtplan_uid,
-                                   dir_dicom=None, path_rtplan=path_rtplan)
+        self._builder.add_modality(modality_id=rtplan_uid, modality_type='RP', dir_dicom=None, path_rtplan=path_rtplan)
 
         # Add the Rtstruct modality :
         rtstruct_uid = dcm.dcmread(str(path_rtstruct)).SeriesInstanceUID
-        self._builder.add_modality(modality='RS', series_instance_uid=rtstruct_uid,
+        self._builder.add_modality(modality_id=rtstruct_uid, modality_type='RS',
                                    dir_dicom=None, path_rtstruct=path_rtstruct)
 
         self._builder.build()

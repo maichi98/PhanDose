@@ -5,10 +5,6 @@ from pathlib import Path
 
 
 class PatientBuilder:
-    """
-    Builder class to construct a Patient object.
-
-    """
 
     def __init__(self):
         """
@@ -27,30 +23,12 @@ class PatientBuilder:
 
         self._patient_id = patient_id
 
-    def add_modality(self, modality: str, series_instance_uid: str, dir_dicom: Path = None, **kwargs):
-        """
-        Add a modality to the Patient object to build.
+    def add_modality(self, modality_id: str, modality_type: str, dir_dicom: Path = None, **kwargs):
 
-        Parameters:
-        -----------
-        modality : (str)
-            Modality of the DICOM files, (e.g. CT, RD, RP, RS, PET).
+        if modality_id not in [modality.modality_id for modality in self._list_modalities]:
 
-        series_instance_uid : (str)
-            Series Instance UID of the DICOM files.
-
-        dir_dicom : (Path), optional
-            Directory containing the DICOM files.
-
-        kwargs : (dict)
-            Additional arguments for modality creation.
-
-        """
-
-        if series_instance_uid not in [mod.series_instance_uid for mod in self._list_modalities]:
-
-            self._list_modalities.append(create_modality(modality=modality,
-                                                         series_instance_uid=series_instance_uid,
+            self._list_modalities.append(create_modality(modality_id=modality_id,
+                                                         modality_type=modality_type,
                                                          dir_dicom=dir_dicom,
                                                          **kwargs))
 

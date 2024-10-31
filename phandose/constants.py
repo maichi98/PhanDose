@@ -15,4 +15,4 @@ DIR_PATIENT_HUB_LINUX = "/home/maichi/.PhanDose/PatientHub"
 DIR_PATIENT_HUB_WINDOWS = fr"D:/PhanDose/PatientHub"
 DIR_PATIENT_HUB = DIR_PATIENT_HUB_LINUX if platform.system() == "Linux" else DIR_PATIENT_HUB_WINDOWS
 
-DIR_LOGS = str(Path(__file__).parent.parent.parent / "logs")
+DIR_LOGS = str(Path(__file__).parent.parent / "logs")

@@ -5,111 +5,45 @@ import pydicom as dcm
 
 
 class RtplanModality(Modality):
-    """
-    Class for RTPLAN modality.
-
-    Attributes
-    ----------
-    series_instance_uid : (str)
-        Series Instance UID of the RTPLAN modality.
-
-    path_rtplan : (Path)
-        Path to the RTPLAN DICOM file.
-
-    series_description : (str)
-        Series Description of the RTPLAN modality.
-
-    Methods
-    -------
-    set_series_description()
-        Setter method for the series description of the RTPLAN modality, the series description is extracted
-        from the DICOM object metadata.
-
-    dicom()
-        Method to return the RTPLAN modality in DICOM format.
-
-    nifti()
-        Method to return the RTPLAN modality in NIfTI format.
-    """
 
     def __init__(self,
-                 series_instance_uid: str,
+                 modality_id: str,
                  dir_dicom: Path = None,
                  path_rtplan: Path = None,
                  series_description: str = None):
-        """
-        Constructor for the RtplanModality class.
 
-        Parameters
-        ----------
-        series_instance_uid : (str)
-            Series Instance UID of the RTPLAN series.
+        super().__init__(modality_id=modality_id, modality_type="RP", series_description=series_description)
 
-        dir_dicom : (Path), optional
-            Directory containing the RTPLAN DICOM file, optional if path_rtplan is provided.
-
-        path_rtplan : (Path), optional
-            Path to the RTPLAN DICOM file, optional if not provided, it will be determined from dir_dicom.
-
-        series_description : (str), optional
-            Series Description of the RTPLAN series.
-        """
-
-        super().__init__(series_instance_uid, series_description, "RP")
-        self._path_rtplan = path_rtplan
         self._dir_dicom = dir_dicom
+        self._path_rtplan = path_rtplan
+
+    def set_path_rtplan(self):
+        self._path_rtplan = next(path_dicom
+                                 for path_dicom in self._dir_dicom.glob("*.dcm")
+                                 if dcm.dcmread(path_dicom).SeriesInstanceUID == self.modality_id)
 
     @property
     def path_rtplan(self) -> Path:
-        """
-        Getter for the path to the RTPLAN DICOM file.
-
-        Returns
-        -------
-        Path
-            the path to the RTPLAN DICOM file.
-        """
 
         if not self._path_rtplan:
-            self._path_rtplan = next(path_dicom
-                                     for path_dicom in self._dir_dicom.glob("*.dcm")
-                                     if dcm.dcmread(path_dicom).SeriesInstanceUID == self.series_instance_uid)
+            self.set_path_rtplan()
 
         return self._path_rtplan
 
     def set_series_description(self):
-        """
-        Setter for the series description of the RTPLAN modality, the series description is extracted from the
-        DICOM object metadata.
-        """
-
         self._series_description = self.dicom().SeriesDescription
 
     def dicom(self) -> dcm.dataset.FileDataset:
-        """
-        Getter for the RTPLAN DICOM object.
-
-        Returns
-        -------
-        dcm.dataset.FileDataset
-            RTPLAN modality in DICOM format.
-        """
-
         return dcm.dcmread(str(self.path_rtplan))
 
     def nifti(self):
         pass
 
-    def __repr__(self):
-        """
-        Returns a developer-friendly representation of the RTPLANModality object.
+    def get_referenced_rtstruct_uid(self) -> str:
 
-        Returns
-        -------
-        str
-            Developer-friendly representation of the RTPLANModality object.
-        """
+        referenced_rtstruct_sequence = self.dicom().get("ReferencedStructureSetSequence", None)
 
-        return (f"RTPLANModality(series_instance_uid={self.series_instance_uid}, "
-                f"series_description={self.series_description},"
-                f" path_rtplan={self.path_rtplan})")
+        if not referenced_rtstruct_sequence:
+            raise ValueError(f"RTPLAN {self.modality_id} doesn't reference any RTSTRUCT !")
+
+        return referenced_rtstruct_sequence[0].get("ReferencedSOPInstanceUID")

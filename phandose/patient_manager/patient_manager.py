@@ -5,7 +5,7 @@ from pathlib import Path
 
 class PatientManager:
 
-    def __init__(self, dir_patient_hub: Path):
+    def __init__(self, patient: Patient, dir_patient_hub: Path):
 
         self._dir_patient_hub = dir_patient_hub
         self._dir_patient_hub.mkdir(parents=True, exist_ok=True)
