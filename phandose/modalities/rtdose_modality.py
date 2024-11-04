@@ -1,7 +1,8 @@
-from phandose.modalities.modality import Modality
+from .modality import Modality
 
 from pathlib import Path
 import pydicom as dcm
+import shutil
 
 
 class RtdoseModality(Modality):
@@ -19,9 +20,14 @@ class RtdoseModality(Modality):
 
     def set_path_rtdose(self):
 
-        self._path_rtdose = next(path_dicom
-                                 for path_dicom in self._dir_dicom.glob("*.dcm")
-                                 if dcm.dcmread(path_dicom).SeriesInstanceUID == self.modality_id)
+        list_possible_rtdose = [path_dicom
+                                for path_dicom in self._dir_dicom.glob("*.dcm")
+                                if dcm.dcmread(path_dicom).SOPInstanceUID == self.modality_id]
+
+        if len(list_possible_rtdose) != 1:
+            raise ValueError(f"Number of RD files for {self.modality_id} is {len(list_possible_rtdose)} !")
+
+        self._path_rtdose = list_possible_rtdose[0]
 
     @property
     def path_rtdose(self) -> Path:
@@ -52,3 +58,11 @@ class RtdoseModality(Modality):
             raise ValueError(f"RTDOSE {self.modality_id} doesn't reference any RTPLAN !")
 
         return referenced_rtplan_sequence[0].get("ReferencedSOPInstanceUID")
+
+    def store_dicom(self, dir_patient: Path):
+
+        dir_rtdose = dir_patient / "RD"
+        dir_rtdose.mkdir(parents=True, exist_ok=True)
+
+        shutil.copy2(src=str(self.path_rtdose),
+                     dst=str(dir_rtdose / self.path_rtdose.name))

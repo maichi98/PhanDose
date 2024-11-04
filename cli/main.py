@@ -2,7 +2,11 @@ from cli.menus_cli import display_welcome_message, main_menu, workspace_menu
 from cli.phantom_library_cli import phantom_library_cli
 from cli.workspace_cli import workspace_cli
 
-from phandose import constants, utils
+from phandose.workspace import Workspace
+from phandose.patient_hub import PatientHub
+from phandose import utils
+from pathlib import Path
+import platform
 
 import time
 
@@ -27,8 +31,6 @@ def main():
 
             case '1':
 
-
-
                 while True:
                     workspace_menu()
                     workspace_input = input("Enter your choice : ")
@@ -39,7 +41,13 @@ def main():
                     workspace_cli(workspace_input)
 
             case '2':
-                pass
+                dir_temp_patient_hub = Path("/media/maichi/T7/temp PatientHub")
+
+                patient_hub = PatientHub(dir_temp_patient_hub)
+                workspace = Workspace(patient_hub)
+
+                dir_src_patient = Path("/home/maichi/work/my_projects/PhanDose/sample_data/AGORL_P1")
+
             case '3':
                 phantom_library_cli()
 

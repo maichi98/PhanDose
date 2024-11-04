@@ -1,8 +1,9 @@
-from phandose.modalities.modality import Modality
+from .modality import Modality
 
 from typing import Generator
 from pathlib import Path
 import pydicom as dcm
+import shutil
 
 
 class CTScanModality(Modality):
@@ -23,13 +24,6 @@ class CTScanModality(Modality):
     def set_series_description(self):
         self._series_description = next(self.dicom()).SeriesDescription
 
-    def filter_dicom_slice_paths(self) -> Generator[Path, None, None]:
-        """Yields paths to DICOM slices that match the SeriesInstanceUID of this modality."""
-        for path_dicom in self._dir_dicom.glob("*.dcm"):
-            dicom_slice = dcm.dcmread(str(path_dicom))
-            if dicom_slice.SeriesInstanceUID == self.modality_id:
-                yield path_dicom
-
     def dicom(self) -> Generator[dcm.dataset.FileDataset, None, None]:
         """
         Getter method for the DICOM slices of the CT scan, yields DICOM slice objects that have the same
@@ -41,10 +35,22 @@ class CTScanModality(Modality):
             DICOM slice objects of the CT scan
         """
 
-        for path_dicom in self._dir_dicom.glob("*.dcm"):
+        for path_dicom in self._dir_dicom.rglob("*.dcm"):
             dicom_slice = dcm.dcmread(str(path_dicom))
             if dicom_slice.SeriesInstanceUID == self.modality_id:
                 yield dicom_slice
 
     def nifti(self):
         pass
+
+    def store_dicom(self, dir_patient: Path):
+
+        dir_dst_ct = dir_patient / "CT" / self.modality_id
+        dir_dst_ct.mkdir(parents=True, exist_ok=True)
+
+        for path_dicom in self.dir_dicom.rglob("*.dcm"):
+            dicom_slice = dcm.dcmread(str(path_dicom))
+
+            if dicom_slice.SeriesInstanceUID == self.modality_id:
+                shutil.copy2(src=str(path_dicom),
+                             dst=str(dir_dst_ct / path_dicom.name))

@@ -1,8 +1,8 @@
-from .rtstruct import RtstructModality
-from .rtplan import RtplanModality
-from .rtdose import RtdoseModality
-from .pet import PETScanModality
-from .ct import CTScanModality
+from .rtstruct_modality import RtstructModality
+from .pet_scan_modality import PETScanModality
+from .ct_scan_modality import CTScanModality
+from .rtplan_modality import RtplanModality
+from .rtdose_modality import RtdoseModality
 from .modality import Modality
 
 from pathlib import Path

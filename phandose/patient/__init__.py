@@ -1,3 +1,2 @@
+from .patient_factory import create_patient_from_dicom_directory
 from .patient import Patient
-from .patient_builder import PatientBuilder
-from .patient_director import PatientDirector

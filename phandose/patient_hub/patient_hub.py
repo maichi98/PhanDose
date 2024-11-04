@@ -1,4 +1,4 @@
-from phandose.patient import Patient
+from phandose.patient import Patient, create_patient_from_dicom_directory
 
 from pathlib import Path
 
@@ -10,11 +10,17 @@ class PatientHub:
         self._dir_patient_hub = dir_patient_hub
         self._dir_patient_hub.mkdir(parents=True, exist_ok=True)
 
-    def add_patient(self, patient: Patient):
+    def store_patient_modalities(self, patient: Patient):
 
-        # set the patient directory in the PatientHub directory :
-        path_patient = self._dir_patient_hub / patient.patient_id
+        dir_patient = self._dir_patient_hub / patient.patient_id
+        dir_patient.mkdir(parents=True, exist_ok=True)
 
-        # Save each patient's modality :
+        for modality in patient.list_modalities:
+            modality.store_dicom(dir_patient)
 
-            
+    def load_patient_modalities(self, patient_id: str) -> Patient:
+
+        dir_patient = self._dir_patient_hub / patient_id
+        patient = create_patient_from_dicom_directory(patient_id=patient_id, dir_dicom=dir_patient)
+
+        return patient

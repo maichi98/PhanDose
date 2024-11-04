@@ -1,7 +1,8 @@
-from phandose.modalities.modality import Modality
+from .modality import Modality
 
 from pathlib import Path
 import pydicom as dcm
+import shutil
 
 
 class RtstructModality(Modality):
@@ -18,9 +19,15 @@ class RtstructModality(Modality):
         self._path_rtstruct = path_rtstruct
 
     def set_path_rtstruct(self):
-        self._path_rtstruct = next(path_dicom
-                                   for path_dicom in self._dir_dicom.glob("*.dcm")
-                                   if dcm.dcmread(path_dicom).SeriesInstanceUID == self.modality_id)
+
+        list_possible_rtstruct = [path_dicom
+                                  for path_dicom in self._dir_dicom.glob("*.dcm")
+                                  if dcm.dcmread(path_dicom).SOPInstanceUID == self.modality_id]
+
+        if len(list_possible_rtstruct) != 1:
+            raise ValueError(f"Number of RS files for {self.modality_id} is {len(list_possible_rtstruct)} !")
+
+        self._path_rtstruct = list_possible_rtstruct[0]
 
     @property
     def path_rtstruct(self) -> Path:
@@ -54,3 +61,11 @@ class RtstructModality(Modality):
             raise ValueError(f"RTSTRUCT {self.modality_id} doesn't reference any CT, issue at series !")
 
         return referenced_ct[0].get("SeriesInstanceUID")
+
+    def store_dicom(self, dir_patient: Path):
+
+        dir_rtstruct = dir_patient / "RS"
+        dir_rtstruct.mkdir(exist_ok=True, parents=True)
+
+        shutil.copy2(src=str(self.path_rtstruct),
+                     dst=str(dir_rtstruct / self.path_rtstruct.name))

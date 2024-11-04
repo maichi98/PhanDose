@@ -24,9 +24,9 @@ def main_menu():
     menu = """    
     Please select an option from the following menu (q to quit):
     -----------------------------------------------------------------------------------------------------------
-    1. Access Workspace                  - Add, remove, or select patients from the workspace
-    2. create Temporary Workspace        - Create a temporary workspace 
-    3. Access Phantom Library            - Access the phantom library
+    1. Access Patient Hub                  - Manage Patients
+    2. create Temporary Workspace          - Create a temporary workspace 
+    3. Access Phantom Library              - Access the phantom library
     -----------------------------------------------------------------------------------------------------------
     """
 
