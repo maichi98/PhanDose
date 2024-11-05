@@ -1,6 +1,5 @@
+from .scan_modalities import CTScanModality, PETScanModality
 from .rtstruct_modality import RtstructModality
-from .pet_scan_modality import PETScanModality
-from .ct_scan_modality import CTScanModality
 from .rtplan_modality import RtplanModality
 from .rtdose_modality import RtdoseModality
 from .modality import Modality

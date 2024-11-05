@@ -40,6 +40,8 @@ dependencies = [
     "shapely~=2.0.4",
     "pyarrow>=14.0.1",
     "swifter~=1.4.0",
+    "dicom2nifti~=2.5.0",
+    "antspyx~=0.5.4"
 ]
 
 [project.urls]

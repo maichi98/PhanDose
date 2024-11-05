@@ -57,14 +57,11 @@ class Modality(ABC):
         """
         pass
 
-    @abstractmethod
-    def nifti(self):
-        """
-        Abstract method that returns the modality in NIfTI format.
-        """
-        pass
-
     def __str__(self):
         return f"Modality: {self.modality_type} - UID: {self.modality_id}"
+
+    @abstractmethod
+    def store(self, storage_handler):
+        pass
 
     __repr__ = __str__
