@@ -10,3 +10,6 @@ class PatientHubLoadingHandler:
 
         self._patient = patient
         self._patient_hub = patient_hub
+
+    def load_patient(self):
+        pass

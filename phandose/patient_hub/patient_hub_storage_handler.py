@@ -11,14 +11,14 @@ from pathlib import Path
 import shutil
 
 
-class PatientHubModalityStorageHandler:
+class PatientHubStorageHandler:
 
     def __init__(self, patient: Patient, patient_hub: PatientHub):
 
         self._patient = patient
         self._patient_hub = patient_hub
 
-    def store_patient(self):
+    def store_patient_modalities(self):
 
         # Patient directory :
         dir_patient = self._patient_hub.dir_patient_hub / self._patient.patient_id
