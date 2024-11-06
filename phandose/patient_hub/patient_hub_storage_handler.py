@@ -41,7 +41,6 @@ class PatientHubStorageHandler:
         dir_ct.mkdir(parents=True, exist_ok=True)
 
         # Store CT slices :
-        # noinspection PyTypeChecker
         for dicom_slice in modality.dicom():
 
             path_src = dicom_slice.filename
@@ -62,7 +61,6 @@ class PatientHubStorageHandler:
         dir_pet.mkdir(parents=True, exist_ok=True)
 
         # Store PET slices :
-        # noinspection PyTypeChecker
         for dicom_slice in modality.dicom():
 
             path_src = dicom_slice.filename

@@ -70,6 +70,73 @@ class CenterAlignedFormatter(logging.Formatter):
         return super().format(record)
 
 
+DICT_LOGGING_CONFIG = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'default': {
+            'format': '%(message)s'
+        },
+        'file_formatter': {
+            '()': CenterAlignedFormatter,
+            'format': f'%(asctime)s | %(name)s | %(levelname)s | %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+            'name_width': 15,
+            "level_width": 8
+        }
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'level': 'INFO',
+            'formatter': 'default'
+        },
+        'rootFileHandler': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': f'{constants.DIR_LOGS}/phandose_app.log',
+            'mode': 'a',  # Append mode
+            'maxBytes': 10485760,  # 10MB
+            'backupCount': 3,  # Keep 3 backup files
+            'level': 'DEBUG',
+            'formatter': 'file_formatter'
+        },
+        'patientHubFileHandler': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': f'{constants.DIR_LOGS}/patient_hub.log',
+            'mode': 'a',  # Append mode
+            'maxBytes': 10485760,  # 10MB
+            'backupCount': 3,  # Keep 3 backup files
+            'level': 'DEBUG',
+            'formatter': 'file_formatter'
+        },
+        'phantomLibraryFileHandler': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': f'{constants.DIR_LOGS}/phantom_library.log',
+            'mode': 'a',  # Append mode
+            'maxBytes': 10485760,  # 10MB
+            'backupCount': 3,  # Keep 3 backup files
+            'level': 'DEBUG',
+            'formatter': 'file_formatter'
+        }
+    },
+    'loggers': {
+        'root': {
+            'level': 'DEBUG',
+            'handlers': ['console', 'rootFileHandler']
+        },
+        'PatientHub': {
+            'level': 'DEBUG',
+            'handlers': ['patientHubFileHandler']
+        },
+        'PhantomLibrary': {
+            'level': 'DEBUG',
+            'handlers': ['phantomLibraryFileHandler']
+        }
+    }
+}
+logging.config.dictConfig(DICT_LOGGING_CONFIG)
+
+
 def get_logger(name: str) -> logging.Logger:
     """
     Get a logger object for logging messages.
@@ -85,57 +152,5 @@ def get_logger(name: str) -> logging.Logger:
         A logger object.
 
     """
-    logging.config.dictConfig({
-        'version': 1,
-        'disable_existing_loggers': True,
-        'formatters': {
-            'default': {
-                'format': '%(message)s'
-            },
-            'file_formatter': {
-                '()': CenterAlignedFormatter,
-                'format': f'%(asctime)s | %(name)s | %(levelname)s | %(message)s',
-                'datefmt': '%Y-%m-%d %H:%M:%S',
-                'name_width': 15,
-                "level_width": 8,
-            },
-        },
-        'handlers': {
-            'console': {
-                'class': 'logging.StreamHandler',
-                'level': 'INFO',
-                'formatter': 'default',
-            },
-            'rootFileHandler': {
-                'class': 'logging.handlers.RotatingFileHandler',
-                'filename': f'{constants.DIR_LOGS}/phandose_app.log',
-                'mode': 'a',  # Append mode
-                'maxBytes': 10485760,  # 10MB
-                'backupCount': 3,  # Keep 3 backup files
-                'level': 'DEBUG',
-                'formatter': 'file_formatter',
-            },
-            'phantomLibraryFileHandler': {
-                'class': 'logging.handlers.RotatingFileHandler',
-                'filename': f'{constants.DIR_LOGS}/phantom_library.log',
-                'mode': 'a',  # Append mode
-                'maxBytes': 10485760,  # 10MB
-                'backupCount': 3,  # Keep 3 backup files
-                'level': 'DEBUG',
-                'formatter': 'file_formatter',
-            },
-
-        },
-        'loggers': {
-            'root': {
-                'level': 'DEBUG',
-                'handlers': ['console', 'rootFileHandler'],
-            },
-            'Phantom Library': {
-                'level': 'DEBUG',
-                'handlers': ['console', 'phantomLibraryFileHandler'],
-            },
-        }
-    })
 
     return logging.getLogger(name)

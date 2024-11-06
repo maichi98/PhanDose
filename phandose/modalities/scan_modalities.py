@@ -1,5 +1,3 @@
-import ants
-
 from .modality import Modality
 
 from abc import ABC, abstractmethod
@@ -8,6 +6,7 @@ from pathlib import Path
 import pydicom as dcm
 import dicom2nifti
 import tempfile
+import ants
 
 
 class ScanModality(Modality, ABC):
@@ -41,7 +40,6 @@ class ScanModality(Modality, ABC):
         self._path_nifti = path_nifti
 
     def set_series_description(self):
-        # noinspection PyTypeChecker
         self._series_description = next(self.dicom()).SeriesDescription
 
     def dicom(self) -> Generator[dcm.dataset.FileDataset, None, None]:
@@ -77,7 +75,6 @@ class ScanModality(Modality, ABC):
         if path_nifti.exists() and not overwrite:
             raise FileExistsError(f"{path_nifti} already exists !")
 
-        # noinspection PyTypeChecker
         dicom2nifti.convert_dicom.dicom_array_to_nifti(list(self.dicom()),
                                                        str(path_nifti),
                                                        reorient_nifti=True)
