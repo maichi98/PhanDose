@@ -100,6 +100,24 @@ DICT_LOGGING_CONFIG = {
             'level': 'DEBUG',
             'formatter': 'file_formatter'
         },
+        'modalityFileHandler': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': f'{constants.DIR_LOGS}/modalities.log',
+            'mode': 'a',  # Append mode
+            'maxBytes': 10485760,  # 10MB
+            'backupCount': 3,  # Keep 3 backup files
+            'level': 'DEBUG',
+            'formatter': 'file_formatter'
+        },
+        'patientFileHandler': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': f'{constants.DIR_LOGS}/patients.log',
+            'mode': 'a',  # Append mode
+            'maxBytes': 10485760,  # 10MB
+            'backupCount': 3,  # Keep 3 backup files
+            'level': 'DEBUG',
+            'formatter': 'file_formatter'
+        },
         'patientHubFileHandler': {
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': f'{constants.DIR_LOGS}/patient_hub.log',
@@ -123,6 +141,14 @@ DICT_LOGGING_CONFIG = {
         'root': {
             'level': 'DEBUG',
             'handlers': ['console', 'rootFileHandler']
+        },
+        'modalities': {
+            'level': 'DEBUG',
+            'handlers': ['modalityFileHandler']
+        },
+        'patients': {
+            'level': 'DEBUG',
+            'handlers': ['patientFileHandler']
         },
         'PatientHub': {
             'level': 'DEBUG',

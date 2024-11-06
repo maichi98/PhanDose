@@ -1,4 +1,10 @@
+from phandose.utils import get_logger
+
 from abc import ABC, abstractmethod
+
+
+# Set up logger :
+logger = get_logger("modalities")
 
 
 class Modality(ABC):

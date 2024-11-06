@@ -1,3 +1,5 @@
+from phandose.utils import get_logger
+
 from .scan_modalities import CTScanModality, PETScanModality
 from .rtstruct_modality import RtstructModality
 from .rtplan_modality import RtplanModality
@@ -5,6 +7,10 @@ from .rtdose_modality import RtdoseModality
 from .modality import Modality
 
 from pathlib import Path
+
+
+# Set up logger :
+logger = get_logger("modalities")
 
 
 def create_modality(modality_id: str,

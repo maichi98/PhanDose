@@ -4,9 +4,9 @@ from abc import ABC, abstractmethod
 from typing import Generator
 from pathlib import Path
 import pydicom as dcm
+import nibabel as nib
 import dicom2nifti
 import tempfile
-import ants
 
 
 class ScanModality(Modality, ABC):
@@ -58,13 +58,13 @@ class ScanModality(Modality, ABC):
             if dicom_slice.SeriesInstanceUID == self.modality_id:
                 yield dicom_slice
 
-    def convert_to_nifti(self, path_nifti: Path, overwrite: bool = True):
+    def convert_to_nifti(self, path_nifti: Path | str, overwrite: bool = True):
         """
         Converts the DICOM slices of the Scan to a NIfTI file.
 
         Parameters
         ----------
-        path_nifti : (Path)
+        path_nifti : (Path | str)
             Path to the NIfTI file
 
         overwrite : (bool), optional
@@ -72,14 +72,15 @@ class ScanModality(Modality, ABC):
 
         """
 
+        # make sure path_nifti is a Path object :
+        path_nifti = Path(path_nifti)
+
         if path_nifti.exists() and not overwrite:
             raise FileExistsError(f"{path_nifti} already exists !")
 
         dicom2nifti.convert_dicom.dicom_array_to_nifti(list(self.dicom()),
                                                        str(path_nifti),
                                                        reorient_nifti=True)
-
-        self.path_nifti = path_nifti
 
     def nifti(self):
 
@@ -90,10 +91,7 @@ class ScanModality(Modality, ABC):
         if not self.path_nifti.exists():
             self.convert_to_nifti(self.path_nifti, overwrite=False)
 
-        return ants.image_read(str(self.path_nifti))
-
-    def run_total_segmentation_task(self, dir_output: Path):
-        pass
+        return nib.load(str(self.path_nifti))
 
     @abstractmethod
     def store(self, storage_handler):

@@ -3,6 +3,7 @@ from phandose.modalities import (CTScanModality,
                                  RtdoseModality,
                                  RtplanModality,
                                  RtstructModality)
+
 from phandose.patient_hub import PatientHub
 from phandose.patient import Patient
 
@@ -10,7 +11,7 @@ from pathlib import Path
 import shutil
 
 
-class PatientHubStorageHandler:
+class PatientHubModalityStorageHandler:
 
     def __init__(self, patient: Patient, patient_hub: PatientHub):
 
@@ -30,6 +31,8 @@ class PatientHubStorageHandler:
         scan = self._patient.fetch_scan_linked_to_primary_rtdose()
         dst_folder = f"{scan.modality_type}_TO_TOTALSEGMENTATOR"
         shutil.copytree(src=scan.dir_dicom, dst=dir_patient / dst_folder)
+        # Set the path to the scan nifti output :
+        scan.path_nifti = dir_patient / "temp" / fr"{scan.modality_type}.nii.gz"
 
     def store_ct_scan(self, modality: CTScanModality):
 
