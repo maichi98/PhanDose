@@ -40,17 +40,18 @@ dependencies = [
     "shapely~=2.0.4",
     "pyarrow>=14.0.1",
     "swifter~=1.4.0",
-    "dicom2nifti~=2.5.0",
     "antspyx~=0.5.4",
     "totalsegmentator~=2.4.0",
-]
+    "dask",
+    "platipy~=0.7.2",
+    ]
 
 [project.urls]
 homepage = "https://github.com/maichi98/PhanDose"
 repository = "https://github.com/maichi98/PhanDose"
 
 [project.scripts]
-phandose = "execs.main:phandose"
+phandose = "cli.app_mode.__main__:main"
 
 [build-system]
 requires = ["setuptools>=69.5.1"]

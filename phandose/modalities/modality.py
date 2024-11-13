@@ -63,6 +63,10 @@ class Modality(ABC):
         """
         pass
 
+    @abstractmethod
+    def dataframe(self):
+        pass
+
     def __str__(self):
         return f"Modality: {self.modality_type} - UID: {self.modality_id}"
 

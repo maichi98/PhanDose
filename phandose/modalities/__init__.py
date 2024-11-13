@@ -1,8 +1,6 @@
 from .modality import Modality
 from .scan_modalities import CTScanModality, PETScanModality, ScanModality
-from .rtstruct_modality import RtstructModality
-from .rtplan_modality import RtplanModality
-from .rtdose_modality import RtdoseModality
+from .standalone_modalities import RtstructModality, RtplanModality, RtdoseModality, StandAloneModality
 
 from .modality_factory import create_modality
 
@@ -13,4 +11,5 @@ __all__ = ["Modality",
            "RtplanModality",
            "RtdoseModality",
            "create_modality",
-           "ScanModality"]
+           "ScanModality",
+           "StandAloneModality"]

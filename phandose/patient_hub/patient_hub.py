@@ -1,5 +1,3 @@
-from phandose.patient import Patient, create_patient_from_dicom_directory
-
 from pathlib import Path
 
 

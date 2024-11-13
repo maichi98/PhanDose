@@ -1,1 +1,2 @@
 from .patient_hub import PatientHub
+from .patient_hub_storage_handler import PatientHubStorageHandler

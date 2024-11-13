@@ -1,3 +1,4 @@
+from phandose import conversions
 from .modality import Modality
 
 from abc import ABC, abstractmethod
@@ -73,6 +74,9 @@ class RtdoseModality(StandAloneModality):
     def path_rtdose(self, path_rtdose: Path):
         self.path_dicom = path_rtdose
 
+    def dataframe(self):
+        return conversions.convert_rtdose_to_dataframe(self.dicom())
+
     def is_primary_dose(self) -> bool:
         return self.dicom().get("DoseSummationType") == "PLAN"
 
@@ -83,3 +87,84 @@ class RtdoseModality(StandAloneModality):
             raise ValueError(f"RTDOSE {self.modality_id} doesn't reference any RTPLAN !")
 
         return referenced_rtplan_sequence[0].get("ReferencedSOPInstanceUID")
+
+
+class RtstructModality(StandAloneModality):
+
+    def __init__(self,
+                 modality_id: str,
+                 dir_dicom: Path = None,
+                 path_rtstruct: Path = None,
+                 series_description: str = None,
+                 dir_nifti: Path = None):
+
+        super().__init__(modality_id=modality_id,
+                         modality_type="RS",
+                         dir_dicom=dir_dicom,
+                         path_dicom=path_rtstruct,
+                         series_description=series_description)
+
+        self._dir_nifti = dir_nifti
+
+    @property
+    def path_rtstruct(self) -> Path:
+        return self.path_dicom
+
+    @path_rtstruct.setter
+    def path_rtstruct(self, path_rtstruct: Path):
+        self.path_dicom = path_rtstruct
+
+    def dataframe(self):
+        pass
+
+    def get_referenced_scan_uid(self) -> str:
+
+        referenced_frame_sequence = self.dicom().get("ReferencedFrameOfReferenceSequence", None)
+        if not referenced_frame_sequence:
+            raise ValueError(f"RTSTRUCT {self.modality_id} doesn't reference any Scan, issue at Frame of reference !")
+
+        referenced_study_sequence = referenced_frame_sequence[0].get("RTReferencedStudySequence", None)
+        if not referenced_study_sequence:
+            raise ValueError(f"RTSTRUCT {self.modality_id} doesn't reference any Scan, issue at study !")
+
+        referenced_ct = referenced_study_sequence[0].get("RTReferencedSeriesSequence", None)
+        if not referenced_ct:
+            raise ValueError(f"RTSTRUCT {self.modality_id} doesn't reference any Scan, issue at series !")
+
+        return referenced_ct[0].get("SeriesInstanceUID")
+
+
+class RtplanModality(StandAloneModality):
+
+    def __init__(self,
+                 modality_id: str,
+                 dir_dicom: Path = None,
+                 path_rtplan: Path = None,
+                 series_description: str = None):
+
+        super().__init__(modality_id=modality_id,
+                         modality_type="RP",
+                         dir_dicom=dir_dicom,
+                         path_dicom=path_rtplan,
+                         series_description=series_description)
+
+    @property
+    def path_rtplan(self) -> Path:
+        return self.path_dicom
+
+    def dataframe(self):
+        raise NotImplementedError("RT Plan files do not contain volumetric data and cannot be converted to DataFrame !")
+
+    @path_rtplan.setter
+    def path_rtplan(self, path_rtplan: Path):
+        self.path_dicom = path_rtplan
+
+    def get_referenced_rtstruct_uid(self) -> str:
+
+        referenced_rtstruct_sequence = self.dicom().get("ReferencedStructureSetSequence", None)
+
+        if not referenced_rtstruct_sequence:
+            raise ValueError(f"RTPLAN {self.modality_id} doesn't reference any RTSTRUCT !")
+
+        return referenced_rtstruct_sequence[0].get("ReferencedSOPInstanceUID")
+

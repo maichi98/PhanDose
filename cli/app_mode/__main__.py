@@ -1,14 +1,11 @@
-from cli.menus_cli import display_welcome_message, main_menu, workspace_menu
-from cli.phantom_library_cli import phantom_library_cli
-from cli.workspace_cli import workspace_cli
+from cli.app_mode.menus_cli import display_welcome_message, main_menu, workspace_menu
+from cli.app_mode.phantom_library_cli import phantom_library_cli
+from cli.app_mode.workspace_cli import workspace_cli
 
 from phandose.workspace import Workspace
 from phandose.patient_hub import PatientHub
 from phandose import utils
 from pathlib import Path
-import platform
-
-import time
 
 # Set up logger :
 logger = utils.get_logger(__name__)
@@ -46,7 +43,7 @@ def main():
                 patient_hub = PatientHub(dir_temp_patient_hub)
                 workspace = Workspace(patient_hub)
 
-                dir_src_patient = Path("/home/maichi/work/my_projects/PhanDose/sample_data/AGORL_P1")
+                dir_src_patient = Path("/sample_data/AGORL_P1")
 
             case '3':
                 phantom_library_cli()

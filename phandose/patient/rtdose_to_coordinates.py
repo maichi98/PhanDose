@@ -34,9 +34,9 @@ for root, dirs, files in os.walk(PatLib):
             ListYDiff =  [t - s for s, t in zip(ListRTDosey, ListRTDosey[1:])]
             ListRTDosez  = sorted(RTDose['Z'].unique().tolist())
             ListZDiff =  [t - s for s, t in zip(ListRTDosez, ListRTDosez[1:])]
-            VoxelVolume = (mode(ListXDiff)*mode(ListYDiff)*mode(ListZDiff))/1000
+            VoxelVolume = (mode(ListXDiff)*mode(ListYDiff)*mode(ListZDiff)) / 1000
             for rs in ListRS:
-                RTStruct = pd.read_csv(os.path.join(root, rs), encoding = "ISO-8859-1", sep='\t',header=0)
+                RTStruct = pd.read_csv(os.path.join(root, rs), encoding="ISO-8859-1", sep='\t', header=0)
                 #--------------------------------------------------------------------------------------
                 RTStruct = RTStruct.rename(columns={"ROIContourNumber": "ROIContourIndex"})
                 #--------------------------------------------------------------------------------------
@@ -46,20 +46,20 @@ for root, dirs, files in os.walk(PatLib):
                 Listz = [x for x in ListRTStructz if ( (x >= min(ListRTDosez) - RSslicethickness/2) & (x <= max(ListRTDosez) + RSslicethickness/2))]
                 Contours = RTStruct[RTStruct['z'].isin(Listz)]
                 ListROIs = sorted(Contours['ROIName'].unique().tolist())
-                ListROIs =['external']
+                ListROIs = ['external']
                 print(ListROIs)
                 Dict_of_df = {}
                 for roiname in ListROIs:
                     key_name = str(roiname)
-                    columnsNames= Vars + [roiname]
+                    columnsNames = Vars + [roiname]
                     Dict_of_df[key_name] = copy.deepcopy(pd.DataFrame(columns = columnsNames))
                 for r in ListROIs:
                     roi = Contours[Contours['ROIName'] == r]
                     RoiVolume = 0
                     OrganVolumeInDoseMatrix = 0
                     ListZroi = sorted(roi['z'].unique().tolist())
-                    #Espacement entre coupes consécutives
-                    ListZDiff =  [t - s for s, t in zip(ListZroi, ListZroi[1:])]
+                    # Espacement entre coupes consécutives
+                    ListZDiff = [t - s for s, t in zip(ListZroi, ListZroi[1:])]
                     ListZDiffUnique = list(set(ListZDiff))
                     RTStruct.columns
                     for zr in ListZroi:
@@ -71,14 +71,14 @@ for root, dirs, files in os.walk(PatLib):
                             Polygone = geometry.Polygon(Contour['Polygone'].unique().tolist())
                             # VOLUMES -----------------------------------------------------------------------------------------
                             if len(ListZDiffUnique) == 1:
-                                RoiVolume = RoiVolume + (Polygone.area * mode(ListZDiff))/1000
+                                RoiVolume = RoiVolume + (Polygone.area * mode(ListZDiff)) / 1000
                             # DOSES -----------------------------------------------------------------------------------------
                             ListRDdz = [abs(x-zr) for x in ListRTDosez]
                             dzmin = min(ListRDdz)
                             z0 = ListRTDosez[ListRDdz.index(dzmin)]
-                            df0 = RTDose[RTDose['Z']==z0]
+                            df0 = RTDose[RTDose['Z'] == z0]
                             df0['Z'] = zr
-                            df0['point'] = df0[['X','Y']].apply(tuple, axis=1)
+                            df0['point'] = df0[['X', 'Y']].apply(tuple, axis=1)
                             contains = np.vectorize(lambda p: int(Polygone.contains(geometry.Point(p))), signature='(n)->()')
                             ListPoints = df0['point'].tolist()
                             Contient = contains(np.array(ListPoints))

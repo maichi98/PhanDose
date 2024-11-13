@@ -11,5 +11,6 @@ phandose~=1.0
 setuptools~=69.5.1
 ipython
 rich
-dicom2nifti
 totalsegmentator
+dask
+platipy~=0.7.2
