@@ -106,8 +106,11 @@ DICT_LOGGING_CONFIG = {
             'level': 'DEBUG',
             'handlers': ['console', 'rootFileHandler']
         },
+
     }
 }
+
+logging.getLogger("numexpr.utils").disabled = True
 logging.config.dictConfig(DICT_LOGGING_CONFIG)
 
 
@@ -128,3 +131,7 @@ def get_logger(name: str) -> logging.Logger:
     """
 
     return logging.getLogger(name)
+
+
+def add_file_handler():
+    pass

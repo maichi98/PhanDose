@@ -16,7 +16,8 @@ class Modality(ABC):
     def __init__(self,
                  modality_id: str,
                  modality_type: str,
-                 series_description: str = None):
+                 series_description: str = None,
+                 dir_dicom=None):
         """
         Initializes the Modality with the identifier and modality type.
 
@@ -36,6 +37,7 @@ class Modality(ABC):
         self._modality_id = modality_id
         self._modality_type = modality_type
         self._series_description = series_description
+        self._dir_dicom = dir_dicom
 
     @property
     def modality_id(self) -> str:
@@ -51,6 +53,18 @@ class Modality(ABC):
             self.set_series_description()
 
         return self._series_description
+
+    @property
+    def dir_dicom(self):
+        return self._dir_dicom
+
+    @dir_dicom.setter
+    def dir_dicom(self, dir_dicom):
+
+        if not dir_dicom.exists():
+            raise FileNotFoundError(f"Directory {dir_dicom} doesn't exist !")
+
+        self._dir_dicom = dir_dicom
 
     @abstractmethod
     def set_series_description(self):

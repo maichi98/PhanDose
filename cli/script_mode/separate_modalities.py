@@ -34,8 +34,7 @@ def separate_modalities(list_patients: list[str],
             modality.store(storage_handler)
 
 
-if __name__ == "__main__":
-
+def main():
     args = argparse.ArgumentParser()
 
     args.add_argument('-i', '--dir_input', required=True, type=str,
@@ -64,3 +63,7 @@ if __name__ == "__main__":
     separate_modalities(list_patients=list_patients,
                         dir_input=args.dir_input,
                         dir_output=args.dir_output)
+
+
+if __name__ == "__main__":
+    main()

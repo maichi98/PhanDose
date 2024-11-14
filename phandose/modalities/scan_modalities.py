@@ -1,5 +1,6 @@
 from .modality import Modality
 
+from phandose.utils import dicom_utils
 from phandose import conversions
 
 from abc import ABC
@@ -13,56 +14,39 @@ class ScanModality(Modality, ABC):
     def __init__(self,
                  modality_id: str,
                  modality_type: str,
-                 dir_dicom: Path,
-                 series_description: str = None):
+                 dicom_paths: Generator[Path, None, None] = None,
+                 series_description: str = None,
+                 dir_dicom: Path = None):
 
-        super().__init__(modality_id=modality_id, modality_type=modality_type, series_description=series_description)
+        super().__init__(modality_id=modality_id,
+                         modality_type=modality_type,
+                         series_description=series_description,
+                         dir_dicom=dir_dicom)
 
-        self._dir_dicom = dir_dicom
+        self._dicom_paths = dicom_paths
 
     @property
-    def dir_dicom(self) -> Path:
-        return self._dir_dicom
+    def dicom_paths(self) -> Generator[Path, None, None]:
 
-    @dir_dicom.setter
-    def dir_dicom(self, dir_dicom: Path):
+        if not self._dicom_paths:
+            self.dicom_paths = dicom_utils.find_dicom_paths_of_scan(dir_dicom=self._dir_dicom,
+                                                                    series_instance_uid=self.modality_id)
 
-        if not dir_dicom.exists():
-            raise FileNotFoundError(f"{dir_dicom} does not exist !")
+        return self._dicom_paths
 
-        self._dir_dicom = dir_dicom
+    @dicom_paths.setter
+    def dicom_paths(self, dicom_paths: Generator[Path, None, None] | list[Path]):
+
+        if isinstance(dicom_paths, list):
+            dicom_paths = (path for path in dicom_paths)
+        self._dicom_paths = dicom_paths
 
     def set_series_description(self):
         self._series_description = next(self.dicom()).SeriesDescription
 
-    def dicom_paths(self) -> Generator[Path, None, None]:
-
-        # DICOM slices' paths with their Instance Number:
-        list_dicom_paths = []
-
-        for path_dicom in self.dir_dicom.rglob("*.dcm"):
-
-            try:
-                dcm_slice = dcm.dcmread(str(path_dicom), stop_before_pixels=True)
-
-                if dcm_slice.SeriesInstanceUID == self.modality_id:
-                    instance_number = dcm_slice.get("InstanceNumber", None)
-
-                    if instance_number:
-                        list_dicom_paths.append((path_dicom, instance_number))
-
-            except dcm.errors.InvalidDicomError:
-                # Skip files that are not valid DICOM files
-                continue
-
-        # Sort by Instance Number:
-        for path_dicom, _ in sorted(list_dicom_paths, key=lambda x: x[1]):
-            yield path_dicom
-
     def dicom(self) -> Generator[dcm.dataset.FileDataset, None, None]:
 
-        for path_dicom in self.dicom_paths():
-            yield dcm.dcmread(str(path_dicom))
+        yield from (dcm.dcmread(str(path_dicom)) for path_dicom in self.dicom_paths)
 
     def dataframe(self):
         return conversions.convert_scan_to_dataframe(self.dicom())
@@ -75,12 +59,14 @@ class CTScanModality(ScanModality):
 
     def __init__(self,
                  modality_id: str,
-                 dir_dicom: Path,
+                 dir_dicom: Path = None,
+                 dicom_paths: Generator[Path, None, None] = None,
                  series_description: str = None):
 
         super().__init__(modality_id=modality_id,
                          modality_type="CT",
                          dir_dicom=dir_dicom,
+                         dicom_paths=dicom_paths,
                          series_description=series_description)
 
 
@@ -88,10 +74,12 @@ class PETScanModality(ScanModality):
 
     def __init__(self,
                  modality_id: str,
-                 dir_dicom: Path,
+                 dir_dicom: Path = None,
+                 dicom_paths: Generator[Path, None, None] = None,
                  series_description: str = None):
 
         super().__init__(modality_id=modality_id,
                          modality_type="PET",
                          dir_dicom=dir_dicom,
+                         dicom_paths=dicom_paths,
                          series_description=series_description)

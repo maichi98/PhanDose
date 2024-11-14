@@ -1,7 +1,8 @@
+from phandose.utils import dicom_utils
 from phandose import conversions
 from .modality import Modality
 
-from abc import ABC, abstractmethod
+from abc import ABC
 from pathlib import Path
 import pydicom as dcm
 
@@ -24,23 +25,16 @@ class StandAloneModality(Modality, ABC):
     def path_dicom(self) -> Path:
 
         if not self._path_dicom:
-            self.path_dicom = self.fetch_path_dicom()
+
+            if not self.dir_dicom:
+                raise ValueError("DICOM directory is not set. Please provide a valid directory containing DICOM files !")
+            self.path_dicom = dicom_utils.find_dicom_path(dir_dicom=self.dir_dicom, sop_instance_uid=self.modality_id)
 
         return self._path_dicom
 
     @path_dicom.setter
     def path_dicom(self, path_dicom: Path):
         self._path_dicom = path_dicom
-
-    def fetch_path_dicom(self):
-        list_possible_rtdose = [path_dicom
-                                for path_dicom in self._dir_dicom.glob("*.dcm")
-                                if dcm.dcmread(path_dicom).SOPInstanceUID == self.modality_id]
-
-        if len(list_possible_rtdose) != 1:
-            raise ValueError(f"Number of {self.modality_id} DICOM files is {len(list_possible_rtdose)} !")
-
-        return list_possible_rtdose[0]
 
     def set_series_description(self):
         self._series_description = self.dicom().SeriesDescription
