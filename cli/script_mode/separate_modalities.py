@@ -1,6 +1,7 @@
 from phandose.patient_hub import PatientHub, PatientHubStorageHandler
 from phandose.patient import create_patient_from_dicom_directory
 
+from tqdm import tqdm
 from pathlib import Path
 import argparse
 
@@ -15,7 +16,7 @@ def separate_modalities(list_patients: list[str],
     dir_patient_hub = Path(dir_output)
     patient_hub = PatientHub(dir_patient_hub=dir_patient_hub)
 
-    for patient_id in list_patients:
+    for patient_id in tqdm(list_patients):
 
         # Patient DICOM input directory :
         dir_patient = Path(dir_input) / patient_id
@@ -29,9 +30,12 @@ def separate_modalities(list_patients: list[str],
         print(f"Storing {patient_id} in the PatientHub...")
         storage_handler = PatientHubStorageHandler(patient=patient,
                                                    patient_hub=patient_hub)
-
-        for modality in patient.list_modalities:
-            modality.store(storage_handler)
+        try:
+            for modality in patient.list_modalities:
+                modality.store(storage_handler)
+        except Exception as e:
+            print(f"Error storing {patient_id}: {e}")
+            patient_hub.remove_patient(patient_id=patient_id)
 
 
 def main():

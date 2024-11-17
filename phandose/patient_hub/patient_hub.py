@@ -1,13 +1,24 @@
-from pathlib import Path
+from .patient_repository import PatientRepository
+from .storage_handler import StorageHandler
+
+from phandose.patient import Patient
 
 
 class PatientHub:
 
-    def __init__(self, dir_patient_hub: Path):
+    def __init__(self, repository: PatientRepository, storage_handler: StorageHandler):
 
-        self._dir_patient_hub = dir_patient_hub
-        self._dir_patient_hub.mkdir(parents=True, exist_ok=True)
+        self._repository = repository
+        self._storage_handler = storage_handler
 
-    @property
-    def dir_patient_hub(self):
-        return self._dir_patient_hub
+    def add_patient(self, patient: Patient):
+        self._repository.add_patient(patient)
+        print(f"Patient {patient.patient_id} added to the repository")
+
+    def get_patient(self, patient_id: str):
+        patient = self._repository.get_patient(patient_id)
+
+        if not patient:
+            raise ValueError(f"Patient {patient_id} not found in the repository")
+
+        return patient

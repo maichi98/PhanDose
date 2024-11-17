@@ -65,10 +65,11 @@ def convert_scan_to_dataframe(dicom_slices: Iterable[dcm.dataset.FileDataset]) -
         intensities = (pixel_array.ravel() * slope) + intercept
 
         # Transform the voxel coordinates to world coordinates :
-        origin = np.array(dicom_slice.ImagePositionPatient)
-
+        origin = dicom_slice.ImagePositionPatient
         if not origin or len(origin) != 3:
             raise exceptions.DicomMetadataError("Invalid ImagePositionPatient !")
+
+        origin = np.array(origin)
 
         world_coords = (cached_voxel_coords @ cached_orientation.T) + origin
 

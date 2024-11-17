@@ -42,8 +42,14 @@ class StandAloneModality(Modality, ABC):
     def dicom(self) -> dcm.dataset.FileDataset:
         return dcm.dcmread(str(self.path_dicom))
 
-    def store(self, storage_handler):
-        storage_handler.store_standalone(self)
+    def to_dict(self):
+
+        return {
+            "modality_id": self.modality_id,
+            "modality_type": self.modality_type,
+            "series_description": self.series_description,
+            "path_dicom": str(self.path_dicom)
+        }
 
 
 class RtdoseModality(StandAloneModality):
@@ -51,13 +57,13 @@ class RtdoseModality(StandAloneModality):
     def __init__(self,
                  modality_id: str,
                  dir_dicom: Path = None,
-                 path_rtdose: Path = None,
+                 path_dicom: Path = None,
                  series_description: str = None):
 
         super().__init__(modality_id=modality_id,
                          modality_type="RD",
                          dir_dicom=dir_dicom,
-                         path_dicom=path_rtdose,
+                         path_dicom=path_dicom,
                          series_description=series_description)
 
     @property
@@ -88,14 +94,14 @@ class RtstructModality(StandAloneModality):
     def __init__(self,
                  modality_id: str,
                  dir_dicom: Path = None,
-                 path_rtstruct: Path = None,
+                 path_dicom: Path = None,
                  series_description: str = None,
                  dir_nifti: Path = None):
 
         super().__init__(modality_id=modality_id,
                          modality_type="RS",
                          dir_dicom=dir_dicom,
-                         path_dicom=path_rtstruct,
+                         path_dicom=path_dicom,
                          series_description=series_description)
 
         self._dir_nifti = dir_nifti
@@ -133,13 +139,13 @@ class RtplanModality(StandAloneModality):
     def __init__(self,
                  modality_id: str,
                  dir_dicom: Path = None,
-                 path_rtplan: Path = None,
+                 path_dicom: Path = None,
                  series_description: str = None):
 
         super().__init__(modality_id=modality_id,
                          modality_type="RP",
                          dir_dicom=dir_dicom,
-                         path_dicom=path_rtplan,
+                         path_dicom=path_dicom,
                          series_description=series_description)
 
     @property

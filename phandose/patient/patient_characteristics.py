@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 
 
-def extract_patient_characteristics(*list_path_imaging: Path | str) -> pd.DataFrame:
+def get_patient_characteristics(*list_path_imaging: Path | str) -> pd.DataFrame:
 
     """
     Extract patient characteristics from imaging data (CT or PETCT) stored in specified paths.

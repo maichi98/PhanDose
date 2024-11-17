@@ -31,6 +31,7 @@ keywords = [
     'phan-dose'
 ]
 dependencies = [
+    "tqdm~=4.66.4",
     "numpy~=1.26.4",
     "pandas~=2.2.1",
     "scikit-image~=0.22.0",
@@ -44,6 +45,7 @@ dependencies = [
     "totalsegmentator~=2.4.0",
     "dask",
     "platipy~=0.7.2",
+    "pymongo"
     ]
 
 [project.urls]

@@ -8,9 +8,10 @@ shapely~=2.0.4
 pyarrow>=14.0.1
 swifter~=1.4.0
 phandose~=1.0
-setuptools~=69.5.1
+setuptools~=70.0.0
+tqdm~=4.66.4
 ipython
 rich
 totalsegmentator
 dask
-platipy~=0.7.2
+pymongo

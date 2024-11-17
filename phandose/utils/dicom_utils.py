@@ -1,4 +1,3 @@
-from typing import Generator
 from pathlib import Path
 import pydicom as dcm
 
@@ -64,8 +63,7 @@ def get_series_instance_uid_from_directory(dir_dicom: Path) -> str:
     return series_instance_uids.pop()
 
 
-def find_dicom_path(dir_dicom: Path,
-                    sop_instance_uid: str) -> Path:
+def find_dicom_path(dir_dicom: Path, sop_instance_uid: str) -> Path:
 
     """
     Fetch the path of a DICOM file with a specific SOP Instance UID.
@@ -94,8 +92,7 @@ def find_dicom_path(dir_dicom: Path,
     return list_possible_dicoms[0]
 
 
-def find_dicom_paths_of_scan(dir_dicom: Path,
-                             series_instance_uid: str) -> Generator[Path, None, None]:
+def find_dicom_paths_of_scan(dir_dicom: Path, series_instance_uid: str) -> list[Path]:
 
     """
     Filter DICOM slices of a scan.
@@ -113,6 +110,7 @@ def find_dicom_paths_of_scan(dir_dicom: Path,
     list[dcm.dataset.FileDataset]
         List of DICOM slices of the scan.
     """
+
     # DICOM slices' paths with their Instance Number:
     list_dicom_paths = []
 
@@ -131,4 +129,4 @@ def find_dicom_paths_of_scan(dir_dicom: Path,
             # Skip files that are not valid DICOM files
             continue
 
-    yield from (path_dicom for path_dicom, _ in sorted(list_dicom_paths, key=lambda x: x[1]))
+    return [path_dicom for path_dicom, _ in sorted(list_dicom_paths, key=lambda x: x[1])]
