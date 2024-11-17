@@ -91,28 +91,73 @@ class TestPatient(unittest.TestCase):
             patient = Patient.from_dict(dict_patient)
             self.assertEqual(patient.patient_id, "P12345")
             self.assertEqual(len(patient.list_modalities), 1)
-            self.assertEqual(patient.list_modalities[0], mock_modality)
 
-    @patch("phandose.patient.dcm.read_file")
-    @patch("phandose.utils.get_modality_from_dicom_slice")
-    def test_from_dir_dicom(self, mock_get_modality, mock_dcmread):
-        """Test creating a patient from a DICOM directory."""
-        mock_dcm_slice = MagicMock()
-        mock_dcm_slice.SeriesInstanceUID = "Series12345"
-        mock_dcm_slice.SOPInstanceUID = "SOP12345"
-        mock_dcm_slice.SeriesDescription = "Test Series"
+            added_modality = patient.list_modalities[0]
+            self.assertEqual(added_modality.modality_id, "M12345")
+            self.assertEqual(added_modality.modality_type, "CT")
 
-        mock_dcmread.return_value = mock_dcm_slice
-        mock_get_modality.side_effect = ["CT", "RP"]
+    def test_from_dir_dicom(self):
+        """ Test creating a patient from a directory of DICOM files. """
 
-        with patch("pathlib.Path.rglob") as mock_rglob:
-            mock_rglob.return_value = [Path("/mock/path/file1.dcm"), Path("/mock/path/file2.dcm")]
+        patient_id = "AGORL_P2"
+        dir_dicom = Path(__file__).parents[2] / "sample_data" / patient_id
 
-            patient = Patient.from_dir_dicom(patient_id="P12345", dir_dicom=Path("/mock/path"))
-            self.assertEqual(patient.patient_id, "P12345")
-            self.assertEqual(len(patient.list_modalities), 2)
-            self.assertEqual(patient.list_modalities[0].modality_id, "Series12345")
-            self.assertEqual(patient.list_modalities[1].modality_id, "SOP12345")
+        # Create the patient from the directory
+        patient = Patient.from_dir_dicom(patient_id=patient_id, dir_dicom=dir_dicom)
+
+        # Assertions
+        self.assertEqual(patient.patient_id, patient_id)
+
+        # Check the total number of modalities
+        self.assertEqual(len(patient.list_modalities), 8)
+
+        # Define the expected modalities for comparison
+        expected_modalities = [
+            {"modality_id": "1.2.752.243.1.1.20200515135827571.8400.38735",
+             "modality_type": "RD",
+             "series_description": "larynx"},
+
+            {"modality_id": "1.2.752.243.1.1.20200515135827571.8500.67423",
+             "modality_type": "RD",
+             "series_description": "larynx"},
+
+            {"modality_id": "1.2.752.243.1.1.20200515135827571.8600.52276",
+             "modality_type": "RD",
+             "series_description": "larynx"},
+
+            {"modality_id": "1.2.752.243.1.1.20200515135827570.8000.55215",
+             "modality_type": "RP",
+             "series_description": "larynx"},
+
+            {"modality_id": "1.2.752.243.1.1.20200515135550293.6300.36151",
+             "modality_type": "RS",
+             "series_description": "RS: Approved Structure Set"},
+
+            {"modality_id": "1.2.840.113619.2.290.3.279712783.286.1586324222.579.4",
+             "modality_type": "PET",
+             "series_description": "CT ORL"},
+
+            {"modality_id": "1.3.12.2.1107.5.1.4.49226.30000020042207402018700000674",
+             "modality_type": "CT",
+             "series_description": "RT_THORAX SS IV"},
+
+            {"modality_id": "1.3.12.2.1107.5.1.4.49226.30000020042207402018700000976",
+             "modality_type": "CT",
+             "series_description": "RT_THORAX AC IV"},
+        ]
+
+        # Convert patient modalities to a dictionary keyed by modality_id for easier validation
+        patient_modalities_dict = {
+            modality.modality_id: modality for modality in patient.list_modalities
+        }
+
+        # Validate each expected modality
+        for expected in expected_modalities:
+            with self.subTest(modality_id=expected["modality_id"]):
+                modality = patient_modalities_dict.get(expected["modality_id"])
+                self.assertIsNotNone(modality, f"Modality ID {expected['modality_id']} not found in patient.")
+                self.assertEqual(modality.modality_type, expected["modality_type"])
+                self.assertEqual(modality.series_description, expected["series_description"])
 
 
 if __name__ == "__main__":

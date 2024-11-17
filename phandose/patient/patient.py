@@ -66,9 +66,7 @@ class Patient:
                 elif modality_type in ['RD', 'RP', 'RS']:
 
                     modality_id = dicom_slice.SOPInstanceUID
-                    kwargs = {"RD": {"path_rtdose": path_dicom},
-                              "RP": {"path_rtplan": path_dicom},
-                              "RS": {"path_rtstruct": path_dicom}}[modality_type]
+                    kwargs = {"path_dicom": path_dicom}
 
                 else:
                     raise ValueError(f"Unknown modality type {modality_type} !")
