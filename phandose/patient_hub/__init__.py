@@ -1,2 +1,3 @@
+from .storage_handler import StorageHandler, LocalStorageHandler
+from .patient_repository import PatientRepository
 from .patient_hub import PatientHub
-from .patient_hub_storage_handler import PatientHubStorageHandler

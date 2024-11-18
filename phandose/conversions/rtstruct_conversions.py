@@ -12,4 +12,3 @@ def convert_rtstruct_to_nifti(rtstruct: dcm.dataset.Dataset) -> nib.Nifti1Image:
 
 def convert_rtstruct_to_dataframe(rtstruct: dcm.dataset.Dataset) -> pd.DataFrame:
     pass
-e

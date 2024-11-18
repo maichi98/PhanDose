@@ -23,7 +23,7 @@ class StorageHandler(ABC):
             self._save_scan_modality(patient_id=patient_id, modality=modality)
 
         elif isinstance(modality, StandAloneModality):
-            self._save_standalone_modality(patient_id=patient_id, standalone=modality)
+            self._save_standalone_modality(patient_id=patient_id, modality=modality)
 
         else:
             raise ValueError(f"Unsupported modality type: {modality.modality_type}")
@@ -34,7 +34,7 @@ class StorageHandler(ABC):
             self._delete_scan_modality(patient_id=patient_id, modality=modality)
 
         elif isinstance(modality, StandAloneModality):
-            self._delete_standalone_modality(patient_id=patient_id, standalone=modality)
+            self._delete_standalone_modality(patient_id=patient_id, modality=modality)
 
         else:
             raise ValueError(f"Unsupported modality type: {modality.modality_type}")
@@ -48,11 +48,11 @@ class StorageHandler(ABC):
         pass
 
     @abstractmethod
-    def _save_standalone_modality(self, patient_id: str, standalone: StandAloneModality):
+    def _save_standalone_modality(self, patient_id: str, modality: StandAloneModality):
         pass
 
     @abstractmethod
-    def _delete_standalone_modality(self, patient_id: str, standalone: StandAloneModality):
+    def _delete_standalone_modality(self, patient_id: str, modality: StandAloneModality):
         pass
 
 

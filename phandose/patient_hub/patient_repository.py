@@ -2,8 +2,8 @@ from phandose.modalities import Modality
 from phandose.patient import Patient
 
 from pymongo.errors import DuplicateKeyError
+from datetime import datetime, timezone
 from pymongo import MongoClient
-from datetime import datetime
 
 
 class PatientRepository:
@@ -26,7 +26,7 @@ class PatientRepository:
         """
 
         patient_dict = patient.to_dict()
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         patient_dict["created_at"] = now
         patient_dict["updated_at"] = now
 

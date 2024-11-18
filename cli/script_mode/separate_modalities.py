@@ -1,9 +1,13 @@
-from phandose.patient_hub import PatientHub, PatientHubStorageHandler
-from phandose.patient import create_patient_from_dicom_directory
+from phandose.patient_hub.storage_handler import LocalStorageHandler
+from phandose.patient import Patient
+from phandose import utils
 
 from tqdm import tqdm
 from pathlib import Path
 import argparse
+
+# Create a logger object :
+logger = utils.get_logger("separate_modalities")
 
 
 def separate_modalities(list_patients: list[str],
@@ -12,30 +16,39 @@ def separate_modalities(list_patients: list[str],
                         ):
 
     # Initialize the PatientHub object :
-    print("Initializing the PatientHub object...")
-    dir_patient_hub = Path(dir_output)
-    patient_hub = PatientHub(dir_patient_hub=dir_patient_hub)
+    tqdm.write("Initializing the Storage Handler object...")
+    dir_storage = Path(dir_output)
 
-    for patient_id in tqdm(list_patients):
+    storage_handler = LocalStorageHandler(dir_storage=dir_storage)
 
-        # Patient DICOM input directory :
+    progress_bar = tqdm(total=len(list_patients), desc="Starting...", ncols=100)
+    for patient_id in list_patients:
+
+        # Patient DICOM input directory
         dir_patient = Path(dir_input) / patient_id
 
-        # Initialize the Patient object :
-        print(f"Initializing the Patient object for {patient_id}...")
-        patient = create_patient_from_dicom_directory(patient_id=patient_id,
-                                                      dir_dicom=dir_patient)
+        # Initialize the Patient object
+        message = f"Initializing {patient_id} ..."
+        progress_bar.set_description(message)
+        patient = Patient.from_dir_dicom(patient_id=patient_id, dir_dicom=dir_patient)
 
-        # Store the Patient object in the PatientHub  :
-        print(f"Storing {patient_id} in the PatientHub...")
-        storage_handler = PatientHubStorageHandler(patient=patient,
-                                                   patient_hub=patient_hub)
+        # Store the Patient object in the PatientHub
+        message = f"Storing {patient_id} ..."
+        progress_bar.set_description(message)
         try:
-            for modality in patient.list_modalities:
-                modality.store(storage_handler)
-        except Exception as e:
-            print(f"Error storing {patient_id}: {e}")
-            patient_hub.remove_patient(patient_id=patient_id)
+            storage_handler.save_patient(patient=patient)
+            message = f"{patient_id} stored successfully !"
+            tqdm.write(message)
+
+        except ValueError as e:
+            storage_handler.delete_patient(patient_id=patient_id)
+            message = f"Failed to store {patient_id}, error {e}!"
+            tqdm.write(message)
+
+        # Update the progress bar
+        progress_bar.update(1)
+
+    progress_bar.close()
 
 
 def main():
