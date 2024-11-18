@@ -54,7 +54,7 @@ repository = "https://github.com/maichi98/PhanDose"
 
 [project.scripts]
 phandose = "cli.app_mode.__main__:main"
-phandose_separate_modalities = "cli.script_mode.separate_modalities:main"
+phandose_separate_modalities = "cli.scripts.separate_modalities:main"
 
 [build-system]
 requires = ["setuptools>=69.5.1"]

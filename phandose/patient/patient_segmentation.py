@@ -3,8 +3,6 @@ from pathlib import Path
 import nibabel as nib
 import tempfile
 
-# Se
-
 
 def segment_patient_scan(scan: nib.Nifti1Image, dir_output: Path | str):
 
@@ -25,5 +23,3 @@ def segment_patient_scan(scan: nib.Nifti1Image, dir_output: Path | str):
 
     except Exception as e:
         raise ValueError(f"Failed to run TotalSegmentator task=body !") from e
-
-

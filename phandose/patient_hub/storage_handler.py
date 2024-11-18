@@ -1,9 +1,13 @@
 from phandose.modalities import Modality, ScanModality, StandAloneModality
+from phandose.utils import get_logger
 from phandose.patient import Patient
 
 from abc import ABC, abstractmethod
 from pathlib import Path
 import shutil
+
+# Initialize the logger :
+logger = get_logger("phandose.patient_hub.storage_handler")
 
 
 class StorageHandler(ABC):
@@ -59,8 +63,18 @@ class StorageHandler(ABC):
 class LocalStorageHandler(StorageHandler):
 
     def __init__(self, dir_storage: Path):
+        """
+        Initialize the local storage handler.
+
+        Parameters
+        ----------
+        dir_storage : (Path)
+            The directory where the patient data will be stored.
+
+        """
 
         self._dir_storage = dir_storage
+        logger.debug(f"LocalStorageHandler initialized with storage directory: {str(dir_storage)}")
 
     @property
     def dir_storage(self):
