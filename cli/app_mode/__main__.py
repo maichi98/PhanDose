@@ -1,11 +1,7 @@
 from cli.app_mode.menus_cli import display_welcome_message, main_menu, workspace_menu
-from cli.app_mode.phantom_library_cli import phantom_library_cli
 from cli.app_mode.workspace_cli import workspace_cli
 
-from phandose.workspace import Workspace
-from phandose.patient_hub import PatientHub
 from phandose import utils
-from pathlib import Path
 
 # Set up logger :
 logger = utils.get_logger(__name__)
@@ -38,15 +34,10 @@ def main():
                     workspace_cli(workspace_input)
 
             case '2':
-                dir_temp_patient_hub = Path("/media/maichi/T7/temp PatientHub")
-
-                patient_hub = PatientHub(dir_temp_patient_hub)
-                workspace = Workspace(patient_hub)
-
-                dir_src_patient = Path("/sample_data/AGORL_P1")
+                pass
 
             case '3':
-                phantom_library_cli()
+                pass
 
             case 'q':
                 logger.debug("Exiting PhanDose Application")
