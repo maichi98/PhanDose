@@ -99,28 +99,68 @@ def separate_modalities(list_patients: list[str],
 
 
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        description=(
+            "Separate DICOM modalities for a list of patients and store the results in the specified output directory"
+            " according to the Phandose patient hub structure\n\n"
+            "Notes:\n"
+            "  - Either --patients or --patients_file must be provided, but not both.\n"
+            "  - Ensure that the input directory contains subdirectories named after patient IDs.\n"
+        ),
 
-    parser.add_argument('-i', '--dir_input', required=True, type=str,
-                        help="Input directory containing the DICOM files.")
+        epilog=(
+            "Examples:\n"
+            "  1. Process specific patients:\n"
+            "     phandose_separate_modalities -i /data/dicom -o /data/output -p AGORL_P1 AGORL_P2 AGORL_P4\n\n"
+            "  2. Process patients listed in a file:\n"
+            "     phandose_separate_modalities -i /data/dicom -o /data/output -pf patients.txt\n\n"
+            "  3. Enable verbose logging with INFO level:\n"
+            "     phandose_separate_modalities -i /data/dicom -o /data/output -p 123 456 --verbose --log_level INFO\n"
+        ),
 
-    parser.add_argument('-o', '--dir_output', required=True, type=str,
-                        help="Output directory where the patient hub will be stored.")
+        formatter_class=argparse.RawTextHelpFormatter
+    )
 
-    parser.add_argument('-p', '--patients', required=False, type=str, nargs='+',
-                        help="List of patient IDs to process.")
+    parser.add_argument(
+        '-i', '--dir_input', required=True, type=str,
+        help="**[Required]** Input directory containing the DICOM files. Each patient must have a dedicated subfolder."
+    )
 
-    parser.add_argument('-pf', '--patients_file', required=False, type=str,
-                        help="File containing the list of patient IDs to process.")
+    parser.add_argument(
+        '-o', '--dir_output', required=True, type=str,
+        help="**[Required]** Output directory where processed patient data will be stored."
+    )
 
-    parser.add_argument('--verbose', action='store_true',
-                        help="Enable verbose logging (per-run logging).")
+    parser.add_argument(
+        '-p', '--patients', required=False, type=str, nargs='+',
+        help=(
+            "List of patient IDs to process. Use this option to specify patient IDs directly. "
+            "This is mutually exclusive with --patients_file."
+        )
+    )
 
-    parser.add_argument('--log_level', type=str, default="DEBUG",
-                        help="Logging level for the per-run log file (e.g., DEBUG, INFO, WARNING, ERROR, CRITICAL).")
+    parser.add_argument(
+        '-pf', '--patients_file', required=False, type=str,
+        help=(
+            "File containing the list of patient IDs to process. Each line should contain one patient ID. "
+            "This option cannot be used with --patients."
+        )
+    )
 
-    parser.add_argument('--dir_log', type=str, required=False,
-                        help="Directory for per-run log files. Defaults to dir_output.")
+    parser.add_argument(
+        '--verbose', action='store_true',
+        help="Enable verbose logging, including detailed per-run logging."
+    )
+
+    parser.add_argument(
+        '--log_level', type=str, default="DEBUG",
+        help="Logging level for the per-run log file. Options: DEBUG, INFO, WARNING, ERROR, CRITICAL. Defaults to DEBUG."
+    )
+
+    parser.add_argument(
+        '--dir_log', type=str, required=False,
+        help="Directory to store per-run log files. Defaults to the value of --dir_output."
+    )
 
     args = parser.parse_args()
 

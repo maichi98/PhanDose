@@ -1,4 +1,3 @@
-from phandose.modalities import Modality
 from phandose.patient import Patient
 
 from pymongo.errors import DuplicateKeyError
